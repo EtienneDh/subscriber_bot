@@ -1,0 +1,12 @@
+{
+    "require": {
+        "guzzlehttp/guzzle": "^6.3",
+        "guzzlehttp/oauth-subscriber": "0.3.*"
+    },
+
+    "autoload": {
+        "psr-4": {
+            "BenderBot\\": "src/Classes/BenderBot/"
+        }
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "oauth": {
+        "consumerKey": "",
+        "consumerSecret": "",
+        "token" : "",
+        "tokenSecret" : ""
+    },
+
+    "uris" : {
+        "baseUri" : "https://api.twitter.com/1.1/"
+    }
+}
