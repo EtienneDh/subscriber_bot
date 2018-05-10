@@ -6,6 +6,11 @@ use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Subscriber\Oauth\Oauth1;
 
+/**
+ * Base class for Bender.
+ *
+ * Load config from .json and create and oAuth authenticated client
+ **/
 abstract class AbstractBender
 {
     const CONFIG_DIRECTORY = __DIR__  . '/../../../config/';
@@ -25,7 +30,7 @@ abstract class AbstractBender
     {
         try {
             $config = file_get_contents(self::CONFIG_DIRECTORY . $config . self::CONFIG_FORMAT);
-            $this->setParameters(json_decode($config));
+            $this->setParameters(json_decode($config, true));
         } catch (\Exception $e) {
             echo $ex;
 
@@ -61,23 +66,30 @@ abstract class AbstractBender
 
     }
 
-    private function setParameters(\stdClass $config)
+    private function setParameters(array $configParameters)
     {
-        try {
-            $this->setOauth($config->oauth);
-            $uris          = $config->uris;
-            $this->baseUri = $uris->baseUri;
-
-        } catch(\Exception $ex) {
-            exit("Could not initialize parameters");
-        }
+        foreach($configParameters as $params) {
+            foreach($params as $property => $value) {
+                if(property_exists($this, $property)) {
+                    $this->{$property} = $value;
+                } else {
+                    exit("Unknown parameter: $property \n");
+                }
+            }
+        }        
     }
 
-    private function setOauth(\stdClass $oauthParams)
+    private function setOauth(array $oauthParams)
     {
-        $this->consumerKey    = $oauthParams->consumerKey;
-        $this->consumerSecret = $oauthParams->consumerSecret;
-        $this->token          = $oauthParams->token;
-        $this->tokenSecret    = $oauthParams->tokenSecret;
+        $this->consumerKey    = $oauthParams['consumerKey'];
+        $this->consumerSecret = $oauthParams['consumerSecret'];
+        $this->token          = $oauthParams['token'];
+        $this->tokenSecret    = $oauthParams['tokenSecret'];
+    }
+
+    private function setUris(array $uris)
+    {
+        $uris          = $config->uris;
+        $this->baseUri = $uris->baseUri;
     }
 }

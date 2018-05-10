@@ -21,9 +21,6 @@ class Bender extends AbstractBender
             echo $t['user']['name'] . "\n";
             echo $t['id_str'] . "\n";
         }
-
-
-
         exit;
     }
 }
