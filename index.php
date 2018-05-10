@@ -4,24 +4,23 @@ require 'vendor/autoload.php';
 
 use BenderBot\Bender;
 
+$availaibleConfigs = ['twitter'];
+$config            = $availaibleConfigs[0];
 
-// $res = $client->get('statuses/home_timeline.json');
-//
-// $kittens = $client->get('search/tweets.json', [
-//     'query' => [
-//         'q' => '@kittens',
-//         'result_type' => 'mixed'
-//     ]
-// ]);
-//
-// echo $kittens->getBody();
-// exit;
+if (isset($argc)) {
+	for ($i = 0; $i < $argc; $i++) {
+		$config = $argc[1];
+	}
+}
 
+if(!in_array($config, $availaibleConfigs)) {
+    exit('Unknown configuration' . "\n");
+}
 
 $bender    = new Bender();
 $searchFor = ['SpaceX', 'Elon', 'Musk'];
 
-if($bender->loadConfig('twitter')) {
+if($bender->loadConfig($config)) {
     $bender->initClient();
     $bender->lookFor($searchFor);
 }
