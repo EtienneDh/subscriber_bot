@@ -5,13 +5,9 @@ require 'vendor/autoload.php';
 use BenderBot\Bender;
 
 $availaibleConfigs = ['twitter'];
-$config            = $availaibleConfigs[0];
 
-if (isset($argc)) {
-	for ($i = 0; $i < $argc; $i++) {
-		$config = $argc[1];
-	}
-}
+// Check if config is passed as script paramo
+$config = isset($argv[1]) ? $argv[1] : $availaibleConfigs[0];
 
 if(!in_array($config, $availaibleConfigs)) {
     exit('Unknown configuration' . "\n");

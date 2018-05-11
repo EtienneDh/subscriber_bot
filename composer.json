@@ -6,7 +6,8 @@
 
     "autoload": {
         "psr-4": {
-            "BenderBot\\": "src/Classes/BenderBot/"
+            "BenderBot\\": "src/Classes/BenderBot/",
+            "Utils\\": "src/Classes/Utils/"
         }
     }
 }

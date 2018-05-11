@@ -8,6 +8,13 @@ class Bender extends AbstractBender
 {
     public function lookFor(array $query)
     {
+
+        return json_encode([
+            'Bob' => '1293219',
+            'Mark' => '2193841212'
+        ]);
+
+
         $results = $this->client->get('search/tweets.json', [
             'query' => [
                 'q' => implode('%20', $query),

@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Subscriber\Oauth\Oauth1;
 
+use Utils\Tools;
 /**
  * Base class for Bender.
  *
@@ -14,7 +15,6 @@ use GuzzleHttp\Subscriber\Oauth\Oauth1;
 abstract class AbstractBender
 {
     const CONFIG_DIRECTORY = __DIR__  . '/../../../config/';
-    const CONFIG_FORMAT    = '.json';
 
     // Oauth Info
     protected $consumerKey;
@@ -29,8 +29,8 @@ abstract class AbstractBender
     public function loadConfig(string $config) : bool
     {
         try {
-            $config = file_get_contents(self::CONFIG_DIRECTORY . $config . self::CONFIG_FORMAT);
-            $this->setParameters(json_decode($config, true));
+            $config = Tools::extractJsonFromFile(self::CONFIG_DIRECTORY . $config);
+            $this->setParameters($config);
         } catch (\Exception $e) {
             echo $ex;
 
@@ -76,7 +76,7 @@ abstract class AbstractBender
                     exit("Unknown parameter: $property \n");
                 }
             }
-        }        
+        }
     }
 
     private function setOauth(array $oauthParams)
