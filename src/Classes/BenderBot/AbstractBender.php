@@ -22,7 +22,10 @@ abstract class AbstractBender
     protected $token;
     protected $tokenSecret;
 
+    // url
     protected $baseUri;
+    protected $followUri;
+    protected $repostUri;
 
     protected $client;
 
@@ -77,5 +80,5 @@ abstract class AbstractBender
                 }
             }
         }
-    }    
+    }
 }

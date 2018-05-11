@@ -6,7 +6,7 @@ use BenderBot\Bender;
 
 $availaibleConfigs = ['twitter'];
 
-// Check if config is passed as script paramo
+// Check if config is passed as script params
 $config = isset($argv[1]) ? $argv[1] : $availaibleConfigs[0];
 
 if(!in_array($config, $availaibleConfigs)) {
@@ -14,9 +14,9 @@ if(!in_array($config, $availaibleConfigs)) {
 }
 
 $bender    = new Bender();
-$searchFor = ['SpaceX', 'Elon', 'Musk'];
+$searchFor = ['Witcher'];
 
 if($bender->loadConfig($config)) {
     $bender->initClient();
-    $bender->lookFor($searchFor);
+    $bender->searchFor($searchFor);
 }
