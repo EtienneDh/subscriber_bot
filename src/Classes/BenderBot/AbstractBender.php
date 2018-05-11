@@ -27,6 +27,7 @@ abstract class AbstractBender
     protected $followUri;
     protected $repostUri;
 
+    // GuzzleHttp Client
     protected $client;
 
     public function loadConfig(string $config) : bool

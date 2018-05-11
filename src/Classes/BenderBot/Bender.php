@@ -22,29 +22,22 @@ class Bender extends AbstractBender
         ]);
 
         $tweets =  json_decode($results->getBody(), true);
-        foreach($tweets['statuses'] as $tweet) {
-            $tweetInfo = [
-                    'idTwitter' => $tweet['id_str'],
-                    'userName'  => $tweet['user']['name'],
-                    'userId'  => $tweet['user']['id_str'],
-            ];
-            $this->searchResult[] = $tweetInfo;
-        }
 
-        echo count($this->searchResult) . " tweet founds \n";
-        $tweet = $this->searchResult[1];
+        // foreach($tweets['statuses'] as $tweet) {
+        //     $tweetInfo = [
+        //             'idTwitter' => $tweet['id_str'],
+        //             'userName'  => $tweet['user']['name'],
+        //             'userId'  => $tweet['user']['id_str'],
+        //     ];
+        //     $this->searchResult[] = $tweetInfo;
+        // }
 
-        echo "about to follow " . $tweet['userName'] . " ...\n";
-        $this->subscribe($tweet['userId']);
+        // echo count($this->searchResult) . " tweet founds \n";
+        // $tweet = $this->searchResult[1];
+        //
+        // echo "about to follow " . $tweet['userName'] . " ...\n";
+        // $this->subscribe($tweet['userId']);
 
-        // $date = new \DateTime('now');
-        // $d = $date->format('Y-m-d H:m:s');
-        // $a = new Account([
-        //     'id' => 1,
-        //     'id_twitter' => '1234',
-        //     'name' => 'Test',
-        //     'date_add' => $d
-        // ]);
 
 
     }
