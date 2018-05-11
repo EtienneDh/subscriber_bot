@@ -77,19 +77,5 @@ abstract class AbstractBender
                 }
             }
         }
-    }
-
-    private function setOauth(array $oauthParams)
-    {
-        $this->consumerKey    = $oauthParams['consumerKey'];
-        $this->consumerSecret = $oauthParams['consumerSecret'];
-        $this->token          = $oauthParams['token'];
-        $this->tokenSecret    = $oauthParams['tokenSecret'];
-    }
-
-    private function setUris(array $uris)
-    {
-        $uris          = $config->uris;
-        $this->baseUri = $uris->baseUri;
-    }
+    }    
 }
