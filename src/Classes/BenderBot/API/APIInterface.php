@@ -10,7 +10,7 @@ interface APIInterface
 
     public function setUris(array $client) : APIInterface;
 
-    public function searchFor(array $query, array $options);
+    public function search(array $query, array $options);
 
     public function subscribe(string $twiterId, array $options);
 }

@@ -7,6 +7,8 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Subscriber\Oauth\Oauth1;
 
 use Utils\Tools;
+use BenderBot\API\APIInterface;
+
 /**
  * Base class for Bender.
  *
@@ -15,6 +17,10 @@ use Utils\Tools;
 abstract class AbstractBender
 {
     const CONFIG_DIRECTORY = __DIR__  . '/../../../config/';
+    const CONFIG_FORMAT    = '.json';
+    const API_DIRECTORY    = __DIR__ . '/API/';
+
+    private $configType;
 
     // Oauth Info
     protected $consumerKey;
@@ -22,29 +28,34 @@ abstract class AbstractBender
     protected $token;
     protected $tokenSecret;
 
-    // url
+    protected $api;
+
     protected $baseUri;
-    protected $followUri;
-    protected $repostUri;
 
-    // GuzzleHttp Client
-    protected $client;
-
-    public function loadConfig(string $config) : bool
+    public function loadConfig(string $configType) : bool
     {
+        $this->configType = $configType;
+
         try {
-            $config = Tools::extractJsonFromFile(self::CONFIG_DIRECTORY . $config);
-            $this->setParameters($config);
+            // Load & set Parameters
+            $params = Tools::extractJsonFromFile(self::CONFIG_DIRECTORY . $this->configType);
+            $this->setParameters(json_decode($params, true));
         } catch (\Exception $e) {
             echo $ex;
-
             return false;
         }
 
         return true;
     }
 
-    public function initClient()
+    public function setApi()
+    {
+        // Load & set Api
+        $this->api = $this->getApi($this->configType); //todo : mettre ds Factory
+        $this->api->setClient($this->initClient());
+    }
+
+    public function initClient() : Client
     {
         try {
             $stack = HandlerStack::create();
@@ -57,29 +68,48 @@ abstract class AbstractBender
             ]);
             $stack->push($middleware);
 
-            $this->client = new Client([
+            $client = new Client([
                 'base_uri' => $this->baseUri,
                 'handler' => $stack,
                 'auth' => 'oauth',
             ]);
-
         } catch (\Exception $e) {
             echo $e . "\n";
             exit('Cannot initialize client');
         }
 
+        return $client;
     }
 
     private function setParameters(array $configParameters)
     {
         foreach($configParameters as $params) {
             foreach($params as $property => $value) {
-                if(property_exists($this, $property)) {
-                    $this->{$property} = $value;
+                if($params !== 'uris') {
+                    if(property_exists($this, $property)) {
+                        $this->{$property} = $value;
+                    } else {
+                        exit("Unknown parameter: $property \n");
+                    }
                 } else {
-                    exit("Unknown parameter: $property \n");
+                    $this->uris[$property] = $value;
                 }
             }
         }
+    }
+
+    private function getApi(string $config) : APIInterface
+    {
+        try {
+            $className = ucfirst($config) . 'API';
+            $file      = self::API_DIRECTORY . $className;
+            require $file;
+            $api = new $className();
+        } catch (\Exception $e) {
+            echo "API $className could not be load \n";
+            exit;
+        }
+
+        return $api;
     }
 }
