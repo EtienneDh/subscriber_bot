@@ -10,7 +10,7 @@ use BenderBot\API\APIInterface;
 
 abstract class BenderConfigurator
 {
-    const API_DIRECTORY    = __DIR__ . '/API/';
+    const API_NAMESPACE = "BenderBot\API";
 
     public static $appName;
 
@@ -45,14 +45,13 @@ abstract class BenderConfigurator
 
     public static function getApi() : APIInterface
     {
+        $className = ucfirst(self::$appName) . 'API';
+        $fullName  = self::API_NAMESPACE . "\\" . $className;
+
         try {
-            $className = ucfirst(self::$appName) . 'API';
-            $file      = self::API_DIRECTORY . $className;
-            require $file;
-            $api = new $className();
+            $api = new $fullName;
         } catch (\Exception $e) {
-            echo "API $className could not be found \n";
-            exit;
+            exit("Failed to instanciate $className \n");
         }
 
         $api->setClient(self::$client);

@@ -1,22 +1,22 @@
 <?php
 
-namespace BenderBot\Api;
+namespace BenderBot\API;
 
 use GuzzleHttp\Client;
 use BenderBot\API\APIInterface;
 
-class TwitterApi implements APIInterface
+class TwitterAPI implements APIInterface
 {
     private $client;
     private $uris = array();
 
-    public function setClient(Client $client)
+    public function setClient(Client $client) : APIInterface
     {
         $this->client = $client;
         return $this;
     }
 
-    public function setUris(array $uris)
+    public function setUris(array $uris) : APIInterface
     {
         $this->uris = $uris;
         return $this;
@@ -36,6 +36,14 @@ class TwitterApi implements APIInterface
 
     public function subscribe(string $twitterId, array $options = [])
     {
-
+        $results = $this->client->post('friendships/create.json', [
+            'query' => [
+                'user_id' => $idTwitter,
+                'follow' => true
+            ]
+        ]);
+        echo "Done ! \n";
+        // var_dump(json_decode($results->getBody(), true));
+        exit;
     }
 }

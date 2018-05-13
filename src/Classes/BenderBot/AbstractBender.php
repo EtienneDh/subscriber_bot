@@ -22,6 +22,6 @@ abstract class AbstractBender
 
     public function setAppName(string $appName)
     {
-        $this->appNAme = $appName;
+        $this->appName = $appName;
     }
 }
