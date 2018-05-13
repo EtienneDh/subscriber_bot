@@ -18,16 +18,13 @@ abstract class BenderConfigurator
 
     public static $uris;
 
-    public static function setAppName(string $appName)
-    {
-        self::$appName = $appName;
-    }
-
     /**
      * Fetch parameters from config files, create Client
      */
-    public static function init()
+    public static function init(string $appName)
     {
+        self::$appName = $appName;
+
         // Get application parameters from app_name.json
         try {
             $params = Tools::extractJsonFromFile(self::$appName);

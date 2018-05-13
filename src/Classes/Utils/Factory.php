@@ -28,8 +28,7 @@ class Factory
             $password = $dbParams['password'];
 
             try {
-                self::$dbInstance = 'yoyo';
-                // self::dbInstance = new PDO("mysql:host=$host;dbname=$name;charset=utf8", $user, $password);
+                self::$dbInstance = new PDO("mysql:host=$host;dbname=$name;charset=utf8", $user, $password);
             } catch (\Exception $e) {
                 exit("Failed to connect to $dbName or MySQL server \n");
             }
@@ -41,10 +40,9 @@ class Factory
     public static function getBender(string $appName) : AbstractBender
     {
         $benderBot = new Bender();
+        $benderBot->setAppName($appName);
 
-        BenderConfigurator::setAppName($appName);
-        BenderConfigurator::init();
-
+        BenderConfigurator::init($appName);
         $benderBot->setApi(BenderConfigurator::getApi());
 
         return $benderBot;

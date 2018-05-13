@@ -13,12 +13,15 @@ abstract class AbstractBender
     protected $appName;
     protected $api;
 
+    abstract public function run();
+
     public function setApi(APIInterface $api)
     {
         $this->api = $api;
+    }
 
-        // Load & set Api
-        $this->api = $this->getApi($this->configType); //todo : mettre ds Factory
-        $this->api->setClient($this->initClient());
-    }    
+    public function setAppName(string $appName)
+    {
+        $this->appNAme = $appName;
+    }
 }

@@ -14,3 +14,4 @@ if(!in_array($appName, $availaibleAppNames)) {
 }
 
 $benderBot = Factory::getBender($appName);
+$benderBot->run();
