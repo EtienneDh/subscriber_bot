@@ -9,7 +9,7 @@ use BenderBot\BenderConfigurator;
 
 
 /**
- * Provide Db Connection, will provide bots when more config is added.
+ * Configure and provide class instances.
  */
 class Factory
 {
@@ -47,9 +47,7 @@ class Factory
 
         $benderBot->setApi(BenderConfigurator::getApi());
 
-        exit(var_dump($benderBot));
-
+        return $benderBot;
     }
-
 
 }
