@@ -2,21 +2,15 @@
 
 require 'vendor/autoload.php';
 
-use BenderBot\Bender;
+use Utils\Factory;
 
-$availaibleConfigs = ['twitter'];
+$availaibleAppNames = ['twitter'];
 
 // Check if config is passed as script params
-$config = isset($argv[1]) ? $argv[1] : $availaibleConfigs[0];
+$appName = isset($argv[1]) ? $argv[1] : $availaibleAppNames[0];
 
-if(!in_array($config, $availaibleConfigs)) {
-    exit('Unknown configuration' . "\n");
+if(!in_array($appName, $availaibleAppNames)) {
+    exit('Unknown application name' . "\n");
 }
 
-$bender    = new Bender();
-$searchFor = ['Witcher'];
-
-if($bender->loadConfig($config)) {
-    $bender->initClient();
-    $bender->searchFor($searchFor);
-}
+$benderBot = Factory::getBender($appName);

@@ -4,8 +4,12 @@ namespace Utils;
 
 class Tools
 {
-    public static function extractJsonFromFile(string $filePath, bool $asArray = true)
+    const CONFIG_DIRECTORY = __DIR__  . '/../../../config/';
+
+    public static function extractJsonFromFile(string $fileName, bool $asArray = true)
     {
+        $filePath = self::CONFIG_DIRECTORY . $fileName;
+
         if(file_exists($filePath . '.json')) {
             $content = file_get_contents($filePath . '.json');
         } else {
