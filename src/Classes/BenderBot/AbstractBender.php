@@ -6,12 +6,13 @@ use BenderBot\API\APIInterface;
 
 /**
  * Base class for Bender.
- *
- **/
+ */
 abstract class AbstractBender
 {
     protected $appName;
     protected $api;
+    protected $query;
+    protected $options;
 
     abstract public function run();
 
@@ -23,5 +24,11 @@ abstract class AbstractBender
     public function setAppName(string $appName)
     {
         $this->appName = $appName;
+    }
+
+    public function setQuery(array $query, array $options)
+    {
+        $this->query   = $query;
+        $this->options = $options;
     }
 }

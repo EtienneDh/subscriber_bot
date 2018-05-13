@@ -3,12 +3,20 @@
 namespace BenderBot;
 
 use BenderBot\AbstractBender;
-use BenderBot\Entity\Account;
+// use BenderBot\Entity\Account;
 
 class Bender extends AbstractBender
 {
+    private $results;
+
     public function run()
     {
-        exit(var_dump($this->api));
+        // Look for tweets
+        $this->results = $this->api->search($this->query, $this->options);
+        // if matching:
+            // subscribe
+            // repost
+            // Save to db
+            // chill
     }
 }

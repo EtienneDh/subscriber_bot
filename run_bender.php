@@ -13,5 +13,10 @@ if(!in_array($appName, $availaibleAppNames)) {
     exit('Unknown application name' . "\n");
 }
 
+// move to config or argv
+$query   = ['Kerbal Space Program'];
+$options = [];
+
 $benderBot = Factory::getBender($appName);
+$benderBot->setQuery($query, $options);
 $benderBot->run();

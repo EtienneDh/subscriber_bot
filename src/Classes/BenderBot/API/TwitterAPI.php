@@ -3,6 +3,7 @@
 namespace BenderBot\API;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Response;
 use BenderBot\API\APIInterface;
 
 class TwitterAPI implements APIInterface
@@ -22,28 +23,32 @@ class TwitterAPI implements APIInterface
         return $this;
     }
 
-    public function search(array $query, array $options = [])
+    public function search(array $query, array $options = []) : Response
     {
-        $results = $this->client->get('search/tweets.json', [
+        $route = $this->uris['searchUri'];
+
+        return $this->client->get($route, [
             'query' => [
                 'q' => implode('%20', $query),
                 'result_type' => 'mixed'
             ]
         ]);
-
-        return $results;
     }
 
-    public function subscribe(string $twitterId, array $options = [])
+    public function subscribe(string $twitterId, array $options = []) : Response
     {
-        $results = $this->client->post('friendships/create.json', [
+        $route = $this->uris['followUri'];
+
+        return $this->client->post($route, [
             'query' => [
                 'user_id' => $idTwitter,
-                'follow' => true
+                'follow'  => true
             ]
         ]);
-        echo "Done ! \n";
-        // var_dump(json_decode($results->getBody(), true));
-        exit;
     }
+
+    // private function decode(string $result, bool $asArray = true) : array
+    // {
+    //     return json_decode($results, $asArray);
+    // }
 }
