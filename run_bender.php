@@ -3,6 +3,9 @@
 require 'vendor/autoload.php';
 
 use Utils\Factory;
+use \RedBeanPHP\R as R;
+
+R::setup('mysql:host=localhost;dbname=benderbot_rb', 'root', '');
 
 $availaibleAppNames = ['twitter'];
 
