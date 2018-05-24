@@ -3,6 +3,7 @@
 namespace Utils;
 
 use Utils\Tools;
+
 use BenderBot\AbstractBender;
 use BenderBot\Bender;
 use BenderBot\BenderConfigurator;
