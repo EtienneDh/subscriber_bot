@@ -26,11 +26,11 @@ class Bender extends AbstractBender
         //exit(var_dump($retour));
         $tweets = $retour['statuses'];
 
-        "Echoing authors and text ... \n";
+        "Echoing authors and text ... <br/>\n";
         foreach($tweets as $tweet) {
-            echo $tweet['user']['name'] . "\n";
-            echo $tweet['text'] . "\n";
-            echo "-------------------\n";
+            echo $tweet['user']['name'] . "<br/>\n";
+            echo $tweet['full_text'] . "<br/>\n";
+            echo "-------------------<br/>\n";
         }
         exit;
 
