@@ -30,7 +30,8 @@ class TwitterAPI implements APIInterface
         return $this->client->get($route, [
             'query' => [
                 'q' => implode('%20', $query),
-                'result_type' => 'mixed'
+                'result_type' => 'mixed',
+                'tweet_mode' => 'extended'
             ]
         ]);
     }
