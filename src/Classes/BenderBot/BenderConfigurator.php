@@ -51,7 +51,7 @@ abstract class BenderConfigurator
         try {
             $api = new $fullName;
         } catch (\Exception $e) {
-            exit("Failed to instanciate $className \n");
+            exit("Failed to instantiate $className \n");
         }
 
         $api->setClient(self::$client);

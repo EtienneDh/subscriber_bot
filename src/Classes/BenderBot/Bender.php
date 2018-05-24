@@ -18,5 +18,21 @@ class Bender extends AbstractBender
             // repost
             // Save to db
             // chill
+
+        //$retour = $this->results->getBody();
+        $retour = json_decode($this->results->getBody(), true);
+
+
+        //exit(var_dump($retour));
+        $tweets = $retour['statuses'];
+
+        "Echoing authors and text ... \n";
+        foreach($tweets as $tweet) {
+            echo $tweet['user']['name'] . "\n";
+            echo $tweet['text'] . "\n";
+            echo "-------------------\n";
+        }
+        exit;
+
     }
 }
