@@ -14,7 +14,7 @@ if(!in_array($appName, $availaibleAppNames)) {
 }
 
 // move to config or argv
-$query   = ['Kerbal Space Program'];
+$query   = ['concours'];
 $options = [];
 
 $benderBot = Factory::getBender($appName);

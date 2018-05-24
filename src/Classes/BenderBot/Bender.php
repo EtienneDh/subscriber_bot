@@ -28,7 +28,7 @@ class Bender extends AbstractBender
 
         "Echoing authors and text ... <br/>\n";
         foreach($tweets as $tweet) {
-            echo $tweet['user']['name'] . "<br/>\n";
+            echo $tweet['user']['name'] . ' - '. $tweet['id'] . "<br/>\n";
             echo $tweet['full_text'] . "<br/>\n";
             echo "-------------------<br/>\n";
         }
