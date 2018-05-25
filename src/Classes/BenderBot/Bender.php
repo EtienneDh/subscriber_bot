@@ -11,8 +11,8 @@ class Bender extends AbstractBender
 
     public function run()
     {
-        // Look for tweets
-        $this->results = $this->api->search($this->query, $this->options);
+        // Look for tweet
+        $this->results = $this->api->search();
         // if matching:
             // subscribe
             // repost

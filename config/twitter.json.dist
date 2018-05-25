@@ -12,5 +12,9 @@
         "searchUri" : "search/tweets.json",
         "followUri" : "friendships/create.json",
         "retweetUri" : "statuses/retweet/:id.json"
+    },
+    "search" : {
+        "term" : "concours",
+        "options" : ""
     }
 }

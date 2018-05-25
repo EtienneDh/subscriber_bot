@@ -25,10 +25,4 @@ abstract class AbstractBender
     {
         $this->appName = $appName;
     }
-
-    public function setQuery(array $query, array $options)
-    {
-        $this->query   = $query;
-        $this->options = $options;
-    }
 }

@@ -23,13 +23,19 @@ class TwitterAPI implements APIInterface
         return $this;
     }
 
-    public function search(array $query, array $options = []) : Response
+    public function setSearch(array $search) : APIInterface
+    {
+        $this->search = $search;
+        return $this;
+    }
+
+    public function search() : Response
     {
         $route = $this->uris['baseUri'] . $this->uris['searchUri'];
 
         return $this->client->get($route, [
             'query' => [
-                'q' => implode('%20', $query),
+                'q' => implode('%20', $this->search['term']),
                 'result_type' => 'mixed',
                 'tweet_mode' => 'extended'
             ]

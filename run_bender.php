@@ -17,6 +17,6 @@ if(!in_array($appName, $availaibleAppNames)) {
 $query   = ['concours'];
 $options = [];
 
+
 $benderBot = Factory::getBender($appName);
-$benderBot->setQuery($query, $options);
 $benderBot->run();
