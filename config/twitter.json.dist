@@ -7,6 +7,14 @@
     },
 
     "uris" : {
-        "baseUri" : "https://api.twitter.com/1.1/"
+    	"baseUri" : "https://api.twitter.com/1.1/",
+        "tweetUri" : "statuses/show.json",
+        "searchUri" : "search/tweets.json",
+        "followUri" : "friendships/create.json",
+        "retweetUri" : "statuses/retweet/:id.json"
+    },
+    "search" : {
+        "term" : "concours",
+        "options" : ""
     }
 }

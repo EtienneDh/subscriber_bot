@@ -11,12 +11,28 @@ class Bender extends AbstractBender
 
     public function run()
     {
-        // Look for tweets
-        $this->results = $this->api->search($this->query, $this->options);
+        // Look for tweet
+        $this->results = $this->api->search();
         // if matching:
             // subscribe
             // repost
             // Save to db
             // chill
+
+        //$retour = $this->results->getBody();
+        $retour = json_decode($this->results->getBody(), true);
+
+
+        //exit(var_dump($retour));
+        $tweets = $retour['statuses'];
+
+        "Echoing authors and text ... <br/>\n";
+        foreach($tweets as $tweet) {
+            echo $tweet['user']['name'] . ' - '. $tweet['id'] . "<br/>\n";
+            echo $tweet['full_text'] . "<br/>\n";
+            echo "-------------------<br/>\n";
+        }
+        exit;
+
     }
 }

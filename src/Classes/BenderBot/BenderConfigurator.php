@@ -18,11 +18,14 @@ abstract class BenderConfigurator
 
     public static $uris;
 
+    public static $search;
+
     /**
      * Fetch parameters from config files, create Client
      */
     public static function init(string $appName)
     {
+        
         self::$appName = $appName;
 
         // Get application parameters from app_name.json
@@ -41,6 +44,13 @@ abstract class BenderConfigurator
 
         // set uris
         self::$uris = $params['uris'];
+
+        // Set Term of Search
+        if(isset($params['search']) && isset($params['search']['term'])) {
+            self::$search = $params['search'];
+        } else {
+            exit("Missing parameters: Search term \n");
+        }
     }
 
     public static function getApi() : APIInterface
@@ -51,11 +61,12 @@ abstract class BenderConfigurator
         try {
             $api = new $fullName;
         } catch (\Exception $e) {
-            exit("Failed to instanciate $className \n");
+            exit("Failed to instantiate $className \n");
         }
 
         $api->setClient(self::$client);
         $api->setUris(self::$uris);
+        $api->setSearch(self::$search);
 
         return $api;
     }
