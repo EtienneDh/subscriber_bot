@@ -15,6 +15,13 @@
     },
     "search" : {
         "term" : "concours",
-        "options" : ""
+        "options" : {}
+    },
+    "bot" : {
+        "options" : {
+            "hourBegin" : 8,
+            "hourEnd" : 20,
+            "limitPerMinute" : 30,
+        }
     }
 }
