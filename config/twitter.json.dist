@@ -14,7 +14,7 @@
         "retweetUri" : "statuses/retweet/:id.json"
     },
     "search" : {
-        "term" : ["concours"],
+        "term" : ["witcher 3"],
         "options" : ""
     }
 }

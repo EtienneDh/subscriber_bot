@@ -41,10 +41,5 @@ $password = $params['database']['password'];
 
 R::setup( "mysql:host=localhost;dbname=benderbot_rb", $user, $password);
 
-// move to config or argv
-$query   = ['concours'];
-$options = [];
-
-
 $benderBot = Factory::getBender($appName);
 $benderBot->run();

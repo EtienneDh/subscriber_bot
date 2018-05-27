@@ -16,6 +16,6 @@ abstract class AbstractEntity
         $classNamespace = static::class;
         $a = explode(self::NAMESPACE_DELIMITER, $classNamespace);
 
-        return array_pop($a);
+        return strtolower(array_pop($a));
     }
 }

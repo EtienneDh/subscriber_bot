@@ -17,18 +17,24 @@ abstract class AbstractBender
 
     abstract public function run();
 
-    public function setApi(APIInterface $api)
+    public function setApi(APIInterface $api) : AbstractBender
     {
         $this->api = $api;
+
+        return $this;
     }
 
-    public function setAppName(string $appName)
+    public function setAppName(string $appName) : AbstractBender
     {
         $this->appName = $appName;
+
+        return $this;
     }
 
-    public function setEntityManager(EntityManager $em)
+    public function setEntityManager(EntityManager $em) : AbstractBender
     {
         $this->em = $em;
+
+        return $this;
     }
 }

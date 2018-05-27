@@ -6,23 +6,24 @@ use \RedBeanPHP\R as R;
 use BenderBot\Entity\AbstractEntity;
 use BenderBot\Model\ModelInterface;
 
-
 class BaseModel
 {
-    protected $R;
 
-    public function __construct()
+    public function getBeanForInsert(string $entityName)
     {
-        $this->R = \R;
-    }    
+        return R::dispense($entityName);
+    }
 
-    public function save(AbstractEntity $entity)
+    public function save(\RedBeanPHP\OODBBean $entity) : int
     {
-        if($entity->isValid()) {
-            $entityName = $entity::getEntityName();
-            $this->R::dispense($entityName);
+        if($this->isValid()) {
+            try {
+                $id = R::store($entity);
+            } catch(\Exception $e) {
+                "Fail to save " . $entityName . " to database \n";
+            }
 
-            return $this->R::store($entity);
+            return $id;
         }
     }
 

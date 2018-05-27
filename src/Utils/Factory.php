@@ -18,11 +18,12 @@ class Factory
     public static function getBender(string $appName) : AbstractBender
     {
         $benderBot = new Bender();
-        $benderBot->setAppName($appName);
-        $benderBot->setEntityManager(new EntityManager());
-
         BenderConfigurator::init($appName);
-        $benderBot->setApi(BenderConfigurator::getApi());
+
+        $benderBot->setAppName($appName)
+            ->setEntityManager(new EntityManager())
+            ->setApi(BenderConfigurator::getApi())
+        ;        
 
         return $benderBot;
     }

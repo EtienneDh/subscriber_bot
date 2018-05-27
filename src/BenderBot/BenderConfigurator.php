@@ -34,7 +34,7 @@ class BenderConfigurator
         } catch (\Exception $e) {
             exit("Cannot load application parameters \n");
         }
-        
+
         // set Client
         if(isset($params['oauth']) && isset($params['uris']['baseUri'])) {
             self::startClient($params['oauth'], $params['uris']['baseUri']);
@@ -60,7 +60,7 @@ class BenderConfigurator
     {
         $className = ucfirst(self::$appName) . 'API';
         $fullName  = self::API_NAMESPACE . "\\" . $className;
-
+        // exit(var_dump($fullName));
         try {
             $api = new $fullName;
         } catch (\Exception $e) {
