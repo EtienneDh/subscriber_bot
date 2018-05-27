@@ -17,6 +17,10 @@ class ComposerStaticInit1230bf9ebce2c476203ab2e5d0dc62f0
         array (
             'Utils\\' => 6,
         ),
+        'R' => 
+        array (
+            'RedBeanPHP\\' => 11,
+        ),
         'P' => 
         array (
             'Psr\\Http\\Message\\' => 17,
@@ -38,6 +42,10 @@ class ComposerStaticInit1230bf9ebce2c476203ab2e5d0dc62f0
         'Utils\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src/Classes/Utils',
+        ),
+        'RedBeanPHP\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/gabordemooij/redbean/RedBeanPHP',
         ),
         'Psr\\Http\\Message\\' => 
         array (

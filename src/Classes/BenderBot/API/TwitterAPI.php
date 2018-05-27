@@ -31,7 +31,7 @@ class TwitterAPI implements APIInterface
 
     public function search() : Response
     {
-        $route = $this->uris['baseUri'] . $this->uris['searchUri'];
+        $route = $this->uris['searchUri'];
 
         return $this->client->get($route, [
             'query' => [
@@ -44,7 +44,7 @@ class TwitterAPI implements APIInterface
 
     public function subscribe(string $twitterId, array $options = []) : Response
     {
-        $route = $this->uris['baseUri'] . $this->uris['followUri'];
+        $route = $this->uris['followUri'];
 
         return $this->client->post($route, [
             'query' => [

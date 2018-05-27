@@ -1,7 +1,8 @@
 {
     "require": {
         "guzzlehttp/guzzle": "^6.3",
-        "guzzlehttp/oauth-subscriber": "0.3.*"
+        "guzzlehttp/oauth-subscriber": "0.3.*",
+        "gabordemooij/redbean": "dev-master"
     },
 
     "autoload": {

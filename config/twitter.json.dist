@@ -14,7 +14,7 @@
         "retweetUri" : "statuses/retweet/:id.json"
     },
     "search" : {
-        "term" : "concours",
+        "term" : ["concours"],
         "options" : ""
     }
 }
