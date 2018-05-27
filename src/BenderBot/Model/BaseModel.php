@@ -20,12 +20,12 @@ abstract class BaseModel
 
     public function save(OODBBean $entity) : int
     {
-        // implement method in children to validate here
+        // implement method isValid in children to validate here
         if($this->isValid()) {
             try {
                 $id = R::store($entity);
             } catch(\Exception $e) {
-                "Fail to save " . $entityName . " to database \n";
+                "Fail to save " . static::TYPE . " to database \n";
             }
 
             return $id;
