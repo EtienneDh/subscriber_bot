@@ -7,7 +7,15 @@ use BenderBot\Model\ModelInterface;
 
 class AccountModel extends BaseModel implements ModelInterface
 {
+    /**
+     * Mandatory, used by BaseModel to resolve bean type
+     */
     const TYPE = "account";
+
+    public static function getType() : string
+    {
+        return self::TYPE;
+    }
 
     // Validation logic
     public function isValid() : bool

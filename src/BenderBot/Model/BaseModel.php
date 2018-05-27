@@ -3,7 +3,8 @@
 namespace BenderBot\Model;
 
 use \RedBeanPHP\R as R;
-use BenderBot\Entity\AbstractEntity;
+use RedBeanPHP\OODBBean;
+
 use BenderBot\Model\ModelInterface;
 
 class BaseModel
@@ -17,7 +18,7 @@ class BaseModel
         return R::dispense(static::TYPE);
     }
 
-    public function save(\RedBeanPHP\OODBBean $entity) : int
+    public function save(OODBBean $entity) : int
     {
         // implement method in children to validate here
         if($this->isValid()) {
@@ -31,7 +32,7 @@ class BaseModel
         }
     }
 
-    public function load(int $id)
+    public function load(int $id) : OODBBean
     {
         return R::load(static::TYPE, $id);
     }

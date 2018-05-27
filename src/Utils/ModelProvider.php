@@ -1,7 +1,6 @@
 <?php
 namespace Utils;
 
-use BenderBot\Entity\AbstractEntity;
 use BenderBot\Model\ModelInterface;
 
 class ModelProvider
@@ -16,7 +15,7 @@ class ModelProvider
         try {
             $model = new $fullName;
         } catch (\Exception $e) {
-            exit("Failed to instantiate Model: $className in EntityManager\n");
+            exit("Failed to instantiate Model: $className in ModuleProvider\n");
         }
 
         return $model;

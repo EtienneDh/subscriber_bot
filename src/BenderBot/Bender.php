@@ -3,7 +3,6 @@
 namespace BenderBot;
 
 use BenderBot\AbstractBender;
-use BenderBot\Entity\Account;
 
 class Bender extends AbstractBender
 {
@@ -45,7 +44,7 @@ class Bender extends AbstractBender
         // Get bean from model. This is due to RedBean behaviour where you get
         // your entity from RedBean rather than passing it to the ORM.
         // Mandatory for create only.
-        $a = $accountModel->getBeanForInsert(); // todo: remove arg & return bean according to child class.
+        $a = $accountModel->getBeanForInsert();
 
         // hydrate the bean
         $a->idTwitter = $tweet['user']['id'];
