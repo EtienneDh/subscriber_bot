@@ -25,7 +25,7 @@ abstract class BenderConfigurator
      */
     public static function init(string $appName)
     {
-        
+
         self::$appName = $appName;
 
         // Get application parameters from app_name.json
@@ -34,7 +34,7 @@ abstract class BenderConfigurator
         } catch (\Exception $e) {
             exit("Cannot load application parameters \n");
         }
-
+        exit(var_dump($params));
         // set Client
         if(isset($params['oauth']) && isset($params['uris']['baseUri'])) {
             self::startClient($params['oauth'], $params['uris']['baseUri']);
