@@ -34,7 +34,7 @@ abstract class BenderConfigurator
         } catch (\Exception $e) {
             exit("Cannot load application parameters \n");
         }
-        exit(var_dump($params));
+        
         // set Client
         if(isset($params['oauth']) && isset($params['uris']['baseUri'])) {
             self::startClient($params['oauth'], $params['uris']['baseUri']);
