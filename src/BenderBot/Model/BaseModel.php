@@ -7,7 +7,7 @@ use RedBeanPHP\OODBBean;
 
 use BenderBot\Model\ModelInterface;
 
-class BaseModel
+abstract class BaseModel
 {
     /**
      * Return Bean empty Object for create operation.
