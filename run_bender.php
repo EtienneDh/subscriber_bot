@@ -17,6 +17,8 @@ if(!in_array($appName, $availaibleAppNames)) {
     exit('Unknown application name' . "\n");
 }
 
+// Uncomment to create database
+
 // try {
 //     $pdo = new PDO('mysql:host='.DB_HOST, DB_USER, DB_PASSWORD);
 // } catch (Exception $ex) {
@@ -40,6 +42,11 @@ $user     = $params['database']['user'];
 $password = $params['database']['password'];
 
 R::setup( "mysql:host=localhost;dbname=benderbot_rb", $user, $password);
+
+// move to config or argv
+$query   = ['concours'];
+$options = [];
+
 
 $benderBot = Factory::getBender($appName);
 $benderBot->run();

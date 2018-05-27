@@ -3,7 +3,7 @@
 namespace BenderBot;
 
 use BenderBot\API\APIInterface;
-use Utils\EntityManager;
+use Utils\ModelProvider;
 
 /**
  * Base class for Bender.
@@ -12,7 +12,7 @@ abstract class AbstractBender
 {
     protected $appName;
     protected $api;
-    protected $em;
+    protected $mp;
 
 
     abstract public function run();
@@ -31,9 +31,9 @@ abstract class AbstractBender
         return $this;
     }
 
-    public function setEntityManager(EntityManager $em) : AbstractBender
+    public function setModelProvider(ModelProvider $mp) : AbstractBender
     {
-        $this->em = $em;
+        $this->mp = $mp;
 
         return $this;
     }

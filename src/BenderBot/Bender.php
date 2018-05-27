@@ -36,27 +36,32 @@ class Bender extends AbstractBender
         $retour = json_decode($this->results->getBody(), true);
 
         $tweets = $retour['statuses'];
-        $tweet  = $tweets[0];
+        $tweet  = $tweets[1];
         // exit(var_dump($tweet['user']));
 
-        // Get Model from EntityManager
-        $accountModel = $this->em->getModel('account');
+        // Get Model from ModelProvider
+        $accountModel = $this->mp->getModel('account');
 
         // Get bean from model. This is due to RedBean behaviour where you get
         // your entity from RedBean rather than passing it to the ORM.
         // Mandatory for create only.
-        $a = $accountModel->getBeanForInsert('account'); // remove arg & return bean according to child class.
+        $a = $accountModel->getBeanForInsert(); // todo: remove arg & return bean according to child class.
 
         // hydrate the bean
         $a->idTwitter = $tweet['user']['id'];
-        $a->name = $tweet['user']['name'];        
+        $a->name = $tweet['user']['name'];
         $a->dateAdd = date("Y-m-d H:i:s");
 
         // save it
-        $accountModel->save($a);
+        // $accountModel->save($a);
 
         echo "saved \n";
 
+        echo "loading .. \n";
+
+        // load by Id
+        $account = $accountModel->load(1);
+        var_dump($account);
 
         exit;
 

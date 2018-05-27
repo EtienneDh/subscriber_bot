@@ -4,7 +4,7 @@ namespace Utils;
 use BenderBot\Entity\AbstractEntity;
 use BenderBot\Model\ModelInterface;
 
-class EntityManager
+class ModelProvider
 {
     const MODEL_NAMESPACE = 'BenderBot\Model';
 

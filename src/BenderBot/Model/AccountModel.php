@@ -7,10 +7,11 @@ use BenderBot\Model\ModelInterface;
 
 class AccountModel extends BaseModel implements ModelInterface
 {
-    // Validation logic 
+    const TYPE = "account";
+
+    // Validation logic
     public function isValid() : bool
     {
-        echo "I got called ! \n";
         return true;
     }
 
