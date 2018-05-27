@@ -3,6 +3,7 @@
 namespace BenderBot;
 
 use BenderBot\API\APIInterface;
+use Utils\EntityManager;
 
 /**
  * Base class for Bender.
@@ -11,8 +12,8 @@ abstract class AbstractBender
 {
     protected $appName;
     protected $api;
-    protected $query;
-    protected $options;
+    protected $em;
+
 
     abstract public function run();
 
@@ -24,5 +25,10 @@ abstract class AbstractBender
     public function setAppName(string $appName)
     {
         $this->appName = $appName;
+    }
+
+    public function setEntityManager(EntityManager $em)
+    {
+        $this->em = $em;
     }
 }

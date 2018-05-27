@@ -7,6 +7,7 @@ use Utils\Tools;
 use BenderBot\AbstractBender;
 use BenderBot\Bender;
 use BenderBot\BenderConfigurator;
+use Utils\EntityManager;
 
 
 /**
@@ -18,6 +19,7 @@ class Factory
     {
         $benderBot = new Bender();
         $benderBot->setAppName($appName);
+        $benderBot->setEntityManager(new EntityManager());
 
         BenderConfigurator::init($appName);
         $benderBot->setApi(BenderConfigurator::getApi());

@@ -2,9 +2,8 @@
 
 namespace BenderBot;
 
-use \RedBeanPHP\R as R;
 use BenderBot\AbstractBender;
-// use BenderBot\Entity\Account;
+use BenderBot\Entity\Account;
 
 class Bender extends AbstractBender
 {
@@ -13,7 +12,7 @@ class Bender extends AbstractBender
     public function run()
     {
         // Look for tweet
-        $this->results = $this->api->search();
+        // $this->results = $this->api->search();
         // if matching:
             // subscribe
             // repost
@@ -21,9 +20,9 @@ class Bender extends AbstractBender
             // chill
 
         //$retour = $this->results->getBody();
-        $retour = json_decode($this->results->getBody(), true);
+        // $retour = json_decode($this->results->getBody(), true);
         //
-        $tweets = $retour['statuses'];
+        // $tweets = $retour['statuses'];
         //
         // "Echoing authors and text ... \n";
         // foreach($tweets as $tweet) {
@@ -32,16 +31,19 @@ class Bender extends AbstractBender
         //     echo "-------------------\n";
         // }
 
+        $a = new Account();
+
+        exit(var_dump($a::getEntityName()));
+
+        $a->idTwitter = 12353;
+        $a->name = 'test';
+        $a->dateAdd = new \DateTime('now');
+
+        $a::save();
+
         // $account = R::load( 'account', 1 );
         // var_dump($account);
 
-
-        "Echoing authors and text ... <br/>\n";
-        foreach($tweets as $tweet) {
-            echo $tweet['user']['name'] . ' - '. $tweet['id'] . "<br/>\n";
-            echo $tweet['full_text'] . "<br/>\n";
-            echo "-------------------<br/>\n";
-        }
         exit;
 
     }

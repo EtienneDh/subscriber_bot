@@ -2,39 +2,20 @@
 
 namespace BenderBot\Entity;
 
-class AbstractEntity
+use \RedBeanPHP\R as R;
+
+/**
+ * Base class of entities.
+ */
+abstract class AbstractEntity
 {
-    // Hydrate entity
-    public function __construct(array $values)
-    {
-        foreach($values as $property => $value) {
-            $property = $this->camelify($property);
-            if(property_exists($this, $property)) {
-                if(!strstr('date', $property)) {
-                    $this->{$property} = $value;
-                } else {
-                    $this->{$property} = \DateTime::createFromFormat('Y-m-d H:m:s');
-                }
-            } else {
-                exit("Error while hydrating " . self::classname . " property: $property does not exist");
-            }
-        }
-    }
+    const NAMESPACE_DELIMITER = '\\';
 
-    // Transform snake_case to camel.
-    private function camelify(string $property) : string
+    public static function getEntityName() : string
     {
-        if(false !== strpos($property, '_')) {
-            $letters = str_split($property);
-            for($i = 0; $i < count($letters); $i++) {
-                if($letters[$i] === '_') {
-                    $letters[$i + 1] = strtoupper($letters[$i + 1]);
-                    $letters[$i] = null;
-                }
-            }
-            $property = implode('', $letters);
-        }
+        $classNamespace = static::class;
+        $a = explode(self::NAMESPACE_DELIMITER, $classNamespace);
 
-        return $property;
+        return array_pop($a);
     }
 }
