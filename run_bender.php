@@ -17,6 +17,21 @@ if(!in_array($appName, $availaibleAppNames)) {
     exit('Unknown application name' . "\n");
 }
 
+// try {
+//     $pdo = new PDO('mysql:host='.DB_HOST, DB_USER, DB_PASSWORD);
+// } catch (Exception $ex) {
+//     exit($ex);
+// }
+// $query = "CREATE DATABASE IF NOT EXISTS `".DB_NAME."` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
+//
+// try {
+//     $pdo->prepare($query)->execute();
+// } catch (\Exception $e) {
+//     exit($ex);
+// }
+
+// $pdo = null;
+
 // RedBean ORM init
 $params   = Tools::extractJsonFromFile(PARAMETERS_FILE);
 $host     = $params['database']['host'];
