@@ -8,7 +8,7 @@ use GuzzleHttp\Subscriber\Oauth\Oauth1;
 use Utils\Tools;
 use BenderBot\API\APIInterface;
 
-abstract class BenderConfigurator
+class BenderConfigurator
 {
     const API_NAMESPACE = "BenderBot\API";
 
@@ -43,6 +43,9 @@ abstract class BenderConfigurator
         self::$uris = $params['uris'];
     }
 
+    /**
+     * Instante API from app name
+     */
     public static function getApi() : APIInterface
     {
         $className = ucfirst(self::$appName) . 'API';
@@ -51,7 +54,7 @@ abstract class BenderConfigurator
         try {
             $api = new $fullName;
         } catch (\Exception $e) {
-            exit("Failed to instantiate $className \n");
+            exit("Failed to instantiate Api: $className \n");
         }
 
         $api->setClient(self::$client);
@@ -60,6 +63,9 @@ abstract class BenderConfigurator
         return $api;
     }
 
+    /**
+     * Instantiate and set up guzzle client.
+     */
     private static function startClient(array $oAuth, string $baseUri)
     {
         try {
