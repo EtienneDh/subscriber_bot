@@ -4,7 +4,7 @@ namespace Utils;
 
 class Tools
 {
-    const CONFIG_DIRECTORY = __DIR__  . '/../../../config/';
+    const CONFIG_DIRECTORY = __DIR__  . '/../../config/';
 
     public static function extractJsonFromFile(string $fileName, bool $asArray = true)
     {

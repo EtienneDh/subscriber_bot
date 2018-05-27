@@ -41,7 +41,7 @@ class ComposerStaticInit1230bf9ebce2c476203ab2e5d0dc62f0
     public static $prefixDirsPsr4 = array (
         'Utils\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/src/Classes/Utils',
+            0 => __DIR__ . '/../..' . '/src/Utils',
         ),
         'RedBeanPHP\\' => 
         array (
@@ -69,7 +69,7 @@ class ComposerStaticInit1230bf9ebce2c476203ab2e5d0dc62f0
         ),
         'BenderBot\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/src/Classes/BenderBot',
+            0 => __DIR__ . '/../..' . '/src/BenderBot',
         ),
     );
 

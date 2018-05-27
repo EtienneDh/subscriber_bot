@@ -5,7 +5,7 @@ use BenderBot\Entity\AbstractEntity;
 
 class EntityManager
 {
-    const NAMESPACE_DELIMITER = '\\';
+    const MODEL_PATH = '';
 
     public function getModel(AbstractEntity $entity)
     {
