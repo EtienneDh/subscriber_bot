@@ -32,48 +32,49 @@ class Bender extends AbstractBender
 
         // exit(var_dump($a::getEntityName()));
         $this->results = $this->api->search();
-        $retour = json_decode($this->results->getBody(), true);
+        $retour        = json_decode($this->results->getBody(), true);
+        $tweets        = $retour['statuses'];
 
-        $tweets = $retour['statuses'];
-
-        $tweetModel = $this->mp->getModel('tweet');
+        $tweetModel   = $this->mp->getModel('tweet');
         $accountModel = $this->mp->getModel('account');
 
          foreach($tweets as $tweet) {
 
-            if($tweetModel->tweetAlreadyExist($tweet['id_str']) === null){
+            if(!$tweetModel->isTweetAlreadyRT($tweet['id_str'])){
 
                 /* Add tweet */
                 $t = $tweetModel->getBeanForInsert();
 
                 /* hydrate the bean */
                 $t->idTweet = $tweet['id_str'];
-                $t->text = $tweet['full_text'];
-                $t->rt = $tweet['retweeted'];
+                $t->text    = $tweet['full_text'];
+                $t->rt      = $tweet['retweeted'];
                 $t->dateAdd = date("Y-m-d H:i:s");
                 /* Set meta for long ID */
-                $t->setMeta('cast.idTweet','text'); 
+                $t->setMeta('cast.idTweet','text');
                 /* Save it */
                 $tweetModel->save($t);
 
-                /* Add acoount */
+                /* Add account */
                 $a = $accountModel->getBeanForInsert();
                 // hydrate the bean
-                $a->idTwitter= $tweet['user']['id_str'];
-                $a->name = $tweet['user']['name'];
-                $a->following = $tweet['user']['following'];
+                $a->idTwitter      = $tweet['user']['id_str'];
+                $a->name           = $tweet['user']['name'];
+                $a->following      = $tweet['user']['following'];
                 $a->ownTweetList[] = $t;
-                $a->dateAdd = date("Y-m-d H:i:s");
+                $a->dateAdd        = date("Y-m-d H:i:s");
                 /* Set meta for long ID */
-                $a->setMeta('cast.idTwitter','text'); 
+                $a->setMeta('cast.idTwitter','text');
                 /* Save it */
                 $accountModel->save($a);
 
+            } else {
+                echo "tweet already RT: ".  $tweet['id_str'] ."\n";
             }
         }
 
         echo 'Tweet : ' . $tweetModel->count() . ' <br /> ';
         echo 'Account : ' . $accountModel->count() . '<br />' ;
-        
+
     }
 }

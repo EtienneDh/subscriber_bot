@@ -4,6 +4,7 @@ namespace BenderBot\Model;
 
 use BenderBot\Model\BaseModel;
 use BenderBot\Model\ModelInterface;
+use \RedBeanPHP\R;
 
 class AccountModel extends BaseModel implements ModelInterface
 {

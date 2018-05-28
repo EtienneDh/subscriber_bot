@@ -4,6 +4,7 @@ namespace BenderBot\Model;
 
 use BenderBot\Model\BaseModel;
 use BenderBot\Model\ModelInterface;
+use \RedBeanPHP\R as R;
 
 class TweetModel extends BaseModel implements ModelInterface
 {
@@ -23,8 +24,8 @@ class TweetModel extends BaseModel implements ModelInterface
         return true;
     }
 
-    public function isAlreadyFollowed() : bool
+    public function isTweetAlreadyRT(int $tweetId) : bool
     {
-        return false;
+        return null ===  \RedBeanPHP\R::findOne( static::TYPE, ' id_tweet = ? ', [ $tweetId ] ) ? false : true;
     }
 }

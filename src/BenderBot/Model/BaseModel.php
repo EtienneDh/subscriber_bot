@@ -5,8 +5,6 @@ namespace BenderBot\Model;
 use \RedBeanPHP\R as R;
 use RedBeanPHP\OODBBean;
 
-use BenderBot\Model\ModelInterface;
-
 abstract class BaseModel
 {
     /**
@@ -18,14 +16,9 @@ abstract class BaseModel
         return R::dispense(static::TYPE);
     }
 
-    public function count()
+    public function count() : int
     {
         return R::count(static::TYPE);
-    }
-
-     public function tweetAlreadyExist($value)
-    {
-        return R::findOne( static::TYPE, ' id_tweet = ? ', [ $value ] );
     }
 
     public function save(OODBBean $entity) : int
@@ -39,6 +32,9 @@ abstract class BaseModel
             }
 
             return $id;
+
+        } else {
+            exit("Could not save " . static::TYPE . ": Unvalid");
         }
     }
 
@@ -47,7 +43,7 @@ abstract class BaseModel
         return R::load(static::TYPE, $id);
     }
 
-    public function delete(AbstractEntity $entity)
+    public function delete(OODBBean $entity)
     {
 
     }
