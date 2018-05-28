@@ -18,6 +18,16 @@ abstract class BaseModel
         return R::dispense(static::TYPE);
     }
 
+    public function count()
+    {
+        return R::count(static::TYPE);
+    }
+
+     public function tweetAlreadyExist($value)
+    {
+        return R::findOne( static::TYPE, ' id_tweet = ? ', [ $value ] );
+    }
+
     public function save(OODBBean $entity) : int
     {
         // implement method isValid in children to validate here
