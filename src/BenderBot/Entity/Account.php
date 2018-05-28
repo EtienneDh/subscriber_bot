@@ -10,6 +10,10 @@ class Account extends AbstractEntity
 
     public $name;
 
+    public $following;
+
+    public $ownTweetList;
+
     public $dateAdd;
 
     // public function __construct(array $values)
