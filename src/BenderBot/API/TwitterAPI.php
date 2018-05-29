@@ -42,7 +42,7 @@ class TwitterAPI implements APIInterface
         ]);
     }
 
-    public function subscribe(string $twitterId, array $options = []) : Response
+    public function subscribe(string $idTwitter, array $options = []) : Response
     {
         $route = $this->uris['followUri'];
 
@@ -52,6 +52,16 @@ class TwitterAPI implements APIInterface
                 'follow'  => true
             ]
         ]);
+    }
+
+    public function retweet(string $tweetId) : Response
+    {
+        $route = $this->uris['retweetUri']
+            . $tweetId
+            . '.json'
+        ;
+
+        return $this->client->post($route, []);
     }
 
     // private function decode(string $result, bool $asArray = true) : array
