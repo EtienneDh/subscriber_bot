@@ -39,7 +39,8 @@ class TwitterAPI implements APIInterface
             'query' => [
                 'q' => implode('%20', $this->search['term']),
                 'result_type' => 'mixed',
-                'tweet_mode' => 'extended'
+                'tweet_mode' => 'extended'/*,
+                'count' => 100*/
             ]
         ]);
     }
@@ -68,9 +69,8 @@ class TwitterAPI implements APIInterface
     {
         $route = $this->uris['retweetUri']
             . $tweetId
-            . '.json'
-        ;
-
+            . '.json';
+            
         $response = null;
 
         try {

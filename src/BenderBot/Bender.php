@@ -102,9 +102,6 @@ class Bender extends AbstractBender
         $tweetBean->rt         = false; // additional query required by Twitter for RT status
         $tweetBean->dateAdd    = date("Y-m-d H:i:s");
 
-        /* Set meta for long ID */
-        $tweetBean->setMeta('cast.idTweetStr','text');
-
         return $tweetBean;
     }
 
@@ -116,10 +113,7 @@ class Bender extends AbstractBender
         $accountBean->following      = $account['following'];
         $accountBean->nbOfTweetRT    = 0;
         $accountBean->dateAdd        = date("Y-m-d H:i:s");
-
-        /* Set meta for long ID */
-        $accountBean->setMeta('cast.idTwitterStr','text');
-
+        
         // $accountBean->ownTweetList[] = $t;
 
         return $accountBean;
