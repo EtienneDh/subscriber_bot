@@ -12,11 +12,7 @@ class Bender extends AbstractBender
     public function run()
     {
         $tweetModel   = $this->mp->getModel('tweet');
-        $accountModel = $this->mp->getModel('account');
-
-
-        // var_dump($accountModel->isAlreadyFollowed("106355755"));
-        // exit;
+        $accountModel = $this->mp->getModel('account');        
 
         // Look for tweet
         $this->results = $this->api->search();

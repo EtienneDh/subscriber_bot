@@ -26,6 +26,6 @@ class TweetModel extends BaseModel implements ModelInterface
 
     public function isTweetAlreadyRT(int $tweetId) : bool
     {
-        return null ===  \RedBeanPHP\R::findOne( static::TYPE, ' id_tweet = ? ', [ $tweetId ] ) ? false : true;
+        return null ===  \RedBeanPHP\R::findOne( self::TYPE, ' id_tweet = ? ', [ $tweetId ] ) ? false : true;
     }
 }
