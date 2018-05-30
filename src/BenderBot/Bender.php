@@ -12,7 +12,7 @@ class Bender extends AbstractBender
     public function run()
     {
         $tweetModel   = $this->mp->getModel('tweet');
-        $accountModel = $this->mp->getModel('account');        
+        $accountModel = $this->mp->getModel('account');
 
         // Look for tweet
         $this->results = $this->api->search();
@@ -32,23 +32,24 @@ class Bender extends AbstractBender
                // if tweet mentions 'RT' and 'follow'
                if($parsedTweet['rt'] >= 1 && $parsedTweet['follow'] >= 1) {
                    echo "give away ! \n";
-                   // and does not ask to follow more than 1 account
-                   if($parsedTweet['@'] <= 1 ) { // false positive possible
-                       // find or create account
-                       if($accountModel->isAlreadyFollowed($tweet['user']['id_str'])) {
-                           echo "account existing \n";
-                           $accountBean = $accountModel->load($tweet['user']['id_str']);
-                       } else {
-                           echo "creating new account \n";
-                           $bean        = $accountModel->getBeanForInsert();
-                           $accountBean = $this->hydrateAccountBean($bean, $tweet['user']);
+                   // deal with @follow
+                   $accountToFollow = $this->getAccountsToFollow($tweetBean, $parsedTweet);
+                   continue;
+                   // find or create account
+                   if($accountModel->isAlreadyFollowed($tweet['user']['id_str'])) {
+                       echo "account existing \n";
+                       $accountBean = $accountModel->load($tweet['user']['id_str']);
+                   } else {
+                       echo "creating new account \n";
+                       $bean        = $accountModel->getBeanForInsert();
+                       $accountBean = $this->hydrateAccountBean($bean, $tweet['user']);
 
-                           // follow | todo: check http status
-                           $subsribeSuccess = $this->api->subscribe($accountBean->idTwitter);
-                           if(null !== $subsribeSuccess) {
-                               echo "account followed \n";
-                           }
-                      }
+                       // follow | todo: check http status
+                       $subsribeSuccess = $this->api->subscribe($accountBean->idTwitter);
+                       if(null !== $subsribeSuccess) {
+                           echo "account followed \n";
+                       }
+                  }
 
                       // rt
                       $rtSuccess = $this->api->retweet($tweetBean->idTweet);
@@ -64,13 +65,6 @@ class Bender extends AbstractBender
                       $accountModel->save($accountBean);
                       $tweetModel->save($tweetBean);
                       echo "log saved \n";
-                   } else {
-                       // TODO Deal with more than 1 follow required
-                       // Basicaly need to add API method to find user id by account namespace
-                       echo "can't manage multiple follow give away yet \n";
-                       echo $tweetBean->text . "\n";
-                       var_dump($parsedTweet);
-                    }
                } else {
                    echo "tweet is not a give away \n";
                    echo $tweetBean->text . "\n";
@@ -174,4 +168,28 @@ class Bender extends AbstractBender
 
         return $results;
     }
+
+    private function getAccountsToFollow(OODBBean $tweetBean, array $parsedTweet) : array
+    {
+        $accountsToFollow = [];
+        if($parsedTweet['@'] > 1) {
+            // replace '@' in text body with 'at.' (can't find a way to match @ with following regex -.-)
+            $text = str_replace("@", "at.", $tweetBean->text);
+            // Set the regex.
+            $regex = '/(?<=\bat.)(?:[\w-]+)/is';
+            // Run the regex with preg_match_all.
+            preg_match_all($regex, $text, $matches);
+            // add to array
+            foreach($matches as $match) {
+                $accountsToFollow['name'] = $match;
+            }
+            var_dump($text);
+            $accountsToFollow['id'] = $tweetBean['user']['id_str'];
+            exit(var_dump($accountsToFollow));
+        }
+
+        // add tweet //
+        return $accountsToFollow;
+    }
+
 }
