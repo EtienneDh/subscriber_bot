@@ -24,8 +24,8 @@ class AccountModel extends BaseModel implements ModelInterface
         return true;
     }
 
-    public function isAlreadyFollowed(int $idTwitter) : bool
-    {        
+    public function isAlreadyFollowed(string $idTwitter) : bool
+    {
         return null ===  \RedBeanPHP\R::findOne( static::TYPE, ' id_tweeter = ? ', [ $idTwitter ] ) ? false : true;
     }
 }

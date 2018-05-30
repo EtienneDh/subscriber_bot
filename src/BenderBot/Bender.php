@@ -15,8 +15,8 @@ class Bender extends AbstractBender
         $accountModel = $this->mp->getModel('account');
 
 
-        var_dump($accountModel->isAlreadyFollowed(106355755));
-        exit;
+        // var_dump($accountModel->isAlreadyFollowed("106355755"));
+        // exit;
 
         // Look for tweet
         $this->results = $this->api->search();
@@ -24,6 +24,7 @@ class Bender extends AbstractBender
         $tweets        = $retour['statuses'];
 
         foreach($tweets as $tweet) {
+
         // if not rt already:
            if(!$tweetModel->isTweetAlreadyRT($tweet['id_str'])){
                $bean      = $tweetModel->getBeanForInsert();
@@ -39,35 +40,41 @@ class Bender extends AbstractBender
                    if($parsedTweet['@'] <= 1 ) { // false positive possible
                        // find or create account
                        if($accountModel->isAlreadyFollowed($tweet['user']['id_str'])) {
+                           echo "account existing \n";
                            $accountBean = $accountModel->load($tweet['user']['id_str']);
                        } else {
                            echo "creating new account \n";
                            $bean        = $accountModel->getBeanForInsert();
                            $accountBean = $this->hydrateAccountBean($bean, $tweet['user']);
-                           // var_dump($accountBean->idTwitter);
 
                            // follow | todo: check http status
-                          $this->results = $this->api->subscribe($accountBean->idTwitter);
-                          echo "account followed \n";
-                          // rt
-                          $this->results = $this->api->retweet($tweetBean->idTweet);
+                           $subsribeSuccess = $this->api->subscribe($accountBean->idTwitter);
+                           if(null !== $subsribeSuccess) {
+                               echo "account followed \n";
+                           }
+                      }
+
+                      // rt
+                      $rtSuccess = $this->api->retweet($tweetBean->idTweet);
+                      if(null !== $rtSuccess) {
                           echo "tweet RT \n";
+                      }
 
-                          // save
-                          $accountBean->ownTweetList[] = $tweetBean;
-                          $tweetBean->rt = 1;
+                      // save
+                      $accountBean->ownTweetList[] = $tweetBean;
+                      $accountBean->nbOfTweetRT++;
+                      $tweetBean->rt = 1;
 
-                          $accountModel->save($accountBean);
-                          $tweetModel->save($tweetBean);
-                          echo "log saved \n";
-                       }
+                      $accountModel->save($accountBean);
+                      $tweetModel->save($tweetBean);
+                      echo "log saved \n";
                    } else {
                        // TODO Deal with more than 1 follow required
                        // Basicaly need to add API method to find user id by account namespace
-                       echo "don't manage multiple follow give away yet \n";
+                       echo "can't manage multiple follow give away yet \n";
                        echo $tweetBean->text . "\n";
                        var_dump($parsedTweet);
-                   }
+                    }
                } else {
                    echo "tweet is not a give away \n";
                    echo $tweetBean->text . "\n";
@@ -93,26 +100,29 @@ class Bender extends AbstractBender
 
     private function hydrateTweetBean(OODBBean $tweetBean, array $tweet) : OODBBean
     {
-        $tweetBean->idTweet = $tweet['id_str'];
-        $tweetBean->text    = $tweet['full_text'];
-        $tweetBean->rt      = false; // additional query required by Twitter for RT status
-        $tweetBean->dateAdd = date("Y-m-d H:i:s");
+        $tweetBean->idTweet    = (int)    $tweet['id'];
+        $tweetBean->idTweetStr = (string) $tweet['id_str'];
+        $tweetBean->text       = $tweet['full_text'];
+        $tweetBean->rt         = false; // additional query required by Twitter for RT status
+        $tweetBean->dateAdd    = date("Y-m-d H:i:s");
 
         /* Set meta for long ID */
-        $tweetBean->setMeta('cast.idTweet','text');
+        $tweetBean->setMeta('cast.idTweetStr','text');
 
         return $tweetBean;
     }
 
     private function hydrateAccountBean(OODBBean $accountBean, array $account) : OODBBean
     {
-        $accountBean->idTwitter      = $account['id_str'];
+        $accountBean->idTwitter      = (int)    $account['id'];
+        $accountBean->idTwitterStr   = (string) $account['id_str'];
         $accountBean->name           = $account['name'];
         $accountBean->following      = $account['following'];
+        $accountBean->nbOfTweetRT    = 0;
         $accountBean->dateAdd        = date("Y-m-d H:i:s");
 
         /* Set meta for long ID */
-        $accountBean->setMeta('cast.idTwitter','text');
+        $accountBean->setMeta('cast.idTwitterStr','text');
 
         // $accountBean->ownTweetList[] = $t;
 
@@ -136,7 +146,7 @@ class Bender extends AbstractBender
             if(substr_count($tweetText , $needle) != 0) {
                 switch ($needle) {
                     case 'rt + follow':
-                        $results['rt'] = $results['rt'] + 1 ;
+                        $results['rt']     = $results['rt'] + 1 ;
                         $results['follow'] = $results['follow'] + 1;
                         echo 'rt + follow found' . "\n";
                     break;

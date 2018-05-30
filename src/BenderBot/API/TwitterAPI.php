@@ -4,6 +4,8 @@ namespace BenderBot\API;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Exception\ClientException;
+
 use BenderBot\API\APIInterface;
 
 class TwitterAPI implements APIInterface
@@ -42,26 +44,43 @@ class TwitterAPI implements APIInterface
         ]);
     }
 
-    public function subscribe(string $idTwitter, array $options = []) : Response
+    public function subscribe(string $idTwitter, array $options = []) : ?Response
     {
-        $route = $this->uris['followUri'];
+        $route    = $this->uris['followUri'];
+        $response = null;
 
-        return $this->client->post($route, [
-            'query' => [
-                'user_id' => $idTwitter,
-                'follow'  => true
-            ]
-        ]);
+        try {
+            $response = $this->client->post($route, [
+                'query' => [
+                    'user_id' => $idTwitter,
+                    'follow'  => true
+                ]
+            ]);
+        } catch (ClientException $e) {
+            echo "Error while subscribing to $idTwitter \n";
+            // echo $e . "\n";
+        }
+
+        return $response;
     }
 
-    public function retweet(string $tweetId) : Response
+    public function retweet(string $tweetId) : ?Response
     {
         $route = $this->uris['retweetUri']
             . $tweetId
             . '.json'
         ;
 
-        return $this->client->post($route, []);
+        $response = null;
+
+        try {
+            $this->client->post($route, []);
+        } catch(ClientException $e) {
+            echo "Error while retweeting  $tweetId \n";
+            // echo $e ."\n";
+        }
+
+        return $response;
     }
 
     // private function decode(string $result, bool $asArray = true) : array
