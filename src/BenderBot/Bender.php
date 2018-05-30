@@ -14,6 +14,10 @@ class Bender extends AbstractBender
         $tweetModel   = $this->mp->getModel('tweet');
         $accountModel = $this->mp->getModel('account');
 
+
+        var_dump($accountModel->isAlreadyFollowed(106355755));
+        exit;
+
         // Look for tweet
         $this->results = $this->api->search();
         $retour        = json_decode($this->results->getBody(), true);
@@ -32,7 +36,7 @@ class Bender extends AbstractBender
                if($parsedTweet['rt'] >= 1 && $parsedTweet['follow'] >= 1) {
                    echo "give away ! \n";
                    // and does not ask to follow more than 1 account
-                   if($parsedTweet['@'] === 0 || $parsedTweet['@'] > 1 ) { // false positive possible
+                   if($parsedTweet['@'] <= 1 ) { // false positive possible
                        // find or create account
                        if($accountModel->isAlreadyFollowed($tweet['user']['id_str'])) {
                            $accountBean = $accountModel->load($tweet['user']['id_str']);
