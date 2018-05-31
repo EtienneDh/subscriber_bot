@@ -58,7 +58,7 @@ class TwitterAPI implements APIInterface
                 ]
             ]);
         } catch (ClientException $e) {
-            echo "Error while subscribing to $idTwitter \n";
+            echo "Error while subscribing to $idTwitter\n, Account might be followed already \n";
             // echo $e . "\n";
         }
 
@@ -76,9 +76,8 @@ class TwitterAPI implements APIInterface
         try {
             $this->client->post($route, []);
         } catch(ClientException $e) {
-            echo "Error while retweeting  $tweetId \n";
-            echo $e ."\n";
-            exit;
+            echo "Error while retweeting  $tweetId,\n Tweet might be RT already \n";
+            
         }
 
         return $response;
