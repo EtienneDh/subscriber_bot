@@ -28,4 +28,9 @@ class AccountModel extends BaseModel implements ModelInterface
     {
         return null ===  \RedBeanPHP\R::findOne( self::TYPE, ' id_twitter = ? ', [ $idTwitter ] ) ? false : true;
     }
+
+    public function isAlreadySave(string $screenName) : bool
+    {
+        return null ===  \RedBeanPHP\R::findOne( self::TYPE, ' name = ? ', [ $screenName ] ) ? false : true;
+    }
 }

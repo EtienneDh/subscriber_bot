@@ -39,8 +39,8 @@ class TwitterAPI implements APIInterface
             'query' => [
                 'q' => implode('%20', $this->search['term']),
                 'result_type' => 'mixed',
-                'tweet_mode' => 'extended'/*,
-                'count' => 100*/
+                'tweet_mode' => 'extended',
+                'count' => 100
             ]
         ]);
     }
@@ -59,11 +59,11 @@ class TwitterAPI implements APIInterface
             ]);
         } catch (ClientException $e) {
             echo "Error while subscribing to $idTwitter\n, Account might be followed already \n";
-            // echo $e . "\n";
         }
 
         return $response;
     }
+
 
     public function retweet(string $tweetId) : ?Response
     {
@@ -74,13 +74,24 @@ class TwitterAPI implements APIInterface
         $response = null;
 
         try {
-            $this->client->post($route, []);
+            $response = $this->client->post($route, []);
         } catch(ClientException $e) {
             echo "Error while retweeting  $tweetId,\n Tweet might be RT already \n";
             
         }
 
         return $response;
+    }
+
+    public function user(string $screenName) : ?Response
+    {
+        $route = $this->uris['userUri'];
+
+        return $this->client->get($route, [
+            'query' => [
+                'screen_name' => $screenName
+            ]
+        ]);   
     }
 
     // private function decode(string $result, bool $asArray = true) : array
