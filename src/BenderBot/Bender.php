@@ -19,10 +19,10 @@ class Bender extends AbstractBender
         $retour        = json_decode($this->results->getBody(), true);
         $tweets        = $retour['statuses'];
 
-        foreach($tweets as $tweet) {
+        foreach($tweets as $k => $tweet) {
           
 
-           echo $tweet['id'] . ' : ' .$tweet['user']['name'] . "\n";
+           echo '-'. $k . ' | ' .$tweet['id'] . ' : ' .$tweet['user']['name'] . "\n";
 
            if(isset($tweet['retweeted_status'])){
               echo "Tweet RT dans la recherche\n";
@@ -46,26 +46,32 @@ class Bender extends AbstractBender
                        // find or create account
                        if($accountModel->isAlreadyFollowed($tweet['user']['id_str'])) {
                            echo "account existing \n";
-                           $accountBean = $accountModel->load($tweet['user']['id_str']);
+                           $accountBean = $accountModel->getAccountWithIdTwitter($tweet['user']['id_str']);
                        } else {
                            echo "creating new account \n";
                            $bean        = $accountModel->getBeanForInsert();
                            $accountBean = $this->hydrateAccountBean($bean, $tweet['user']);
 
                             /* Subscribe account */
-                            $this->subscribeAccount($accountBean->idTwitter);
+                            $subsribeSuccess = $this->api->subscribe($accountBean->idTwitter);
+                            if(null !== $subsribeSuccess) {
+                                echo "account followed \n";
+                                $accountBean->following = 1;
+                            }
                       }
 
                       // rt
                       $rtSuccess = $this->api->retweet($tweetBean->idTweet);
                       if(null !== $rtSuccess) {
                           echo "tweet RT \n";
+
+                          // save
+                          $tweetBean->rt = 1;
                       }
 
-                      // save
+                      
                       $accountBean->ownTweetList[] = $tweetBean;
                       $accountBean->nbOfTweetRT++;
-                      $tweetBean->rt = 1;
 
                       $tweetModel->save($tweetBean);
                       $accountModel->save($accountBean);
@@ -90,11 +96,15 @@ class Bender extends AbstractBender
 
                               $bean        = $accountModel->getBeanForInsert();
                               $accountBean = $this->hydrateAccountBean($bean, $objAccount);
-                              $accountModel->save($accountBean);
 
                               /* Subscribe account */
-                              $this->subscribeAccount($accountBean->idTwitter);
-                              
+                              $subsribeSuccess = $this->api->subscribe($objAccount->idTwitter);
+                              if(null !== $subsribeSuccess) {
+                                  echo "account followed \n";
+                                  $accountBean->following = 1;
+                              }
+
+                              $accountModel->save($accountBean);
                             }
                           }
                         }
@@ -110,14 +120,14 @@ class Bender extends AbstractBender
           echo 'Tweet : ' . $tweetModel->count() . "\n";
           echo 'Account : ' . $accountModel->count() . "\n" ;
            // chill for like 10 - 30 sec & repeat
-          $time = rand (10 , 20);
+          $time = rand (20 , 40);
 
           echo "attente de $time secondes entre deux tweets\n";
           sleep($time);
         }
 
-        $reload = rand(600, 900);
-        echo "attente de ". $reload/60 ." minutes entre deux recherches\n";
+        $reload = rand(300, 600);
+        echo "attente de ". intval($reload/60) ." minutes entre deux recherches\n";
         sleep($reload);
         $this->run();
 
@@ -147,18 +157,7 @@ class Bender extends AbstractBender
         $accountBean->nbOfTweetRT    = 0;
         $accountBean->dateAdd        = date("Y-m-d H:i:s");
 
-        // $accountBean->ownTweetList[] = $t;
-
         return $accountBean;
-    }
-
-    private function subscribeAccount(int $idTwitter)
-    {
-      // follow | todo: check http status
-      $subsribeSuccess = $this->api->subscribe($idTwitter);
-      if(null !== $subsribeSuccess) {
-          echo "account followed \n";
-      }
     }
 
     /**
