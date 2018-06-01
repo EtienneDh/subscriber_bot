@@ -4,6 +4,8 @@ namespace BenderBot\API;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Exception\ClientException;
+
 use BenderBot\API\APIInterface;
 
 class TwitterAPI implements APIInterface
@@ -32,26 +34,79 @@ class TwitterAPI implements APIInterface
     public function search() : Response
     {
         $route = $this->uris['searchUri'];
+        $response = null;
 
-        return $this->client->get($route, [
-            'query' => [
-                'q' => implode('%20', $this->search['term']),
-                'result_type' => 'mixed',
-                'tweet_mode' => 'extended'
-            ]
-        ]);
+        try {
+            $response =  $this->client->get($route, [
+                'query' => [
+                    'q' => implode('%20', $this->search['term']),
+                    'result_type' => 'mixed',
+                    'tweet_mode' => 'extended',
+                    'count' => 100
+                ]
+            ]);
+        } catch (ClientException $e) {
+            echo "Error while search tweet\n";
+        }
+
+        return $response;
     }
 
-    public function subscribe(string $twitterId, array $options = []) : Response
+    public function subscribe(string $idTwitter, array $options = []) : ?Response
     {
-        $route = $this->uris['followUri'];
+        $route    = $this->uris['followUri'];
+        $response = null;
 
-        return $this->client->post($route, [
-            'query' => [
-                'user_id' => $idTwitter,
-                'follow'  => true
-            ]
-        ]);
+        try {
+            $response = $this->client->post($route, [
+                'query' => [
+                    'user_id' => $idTwitter,
+                    'follow'  => true
+                ]
+            ]);
+        } catch (ClientException $e) {
+            echo "Error while subscribing to $idTwitter\n";
+        }
+
+        return $response;
+    }
+
+
+    public function retweet(string $tweetId) : ?Response
+    {
+        $route = $this->uris['retweetUri']
+            . $tweetId
+            . '.json';
+            
+        $response = null;
+
+        try {
+            $response = $this->client->post($route, []);
+        } catch(ClientException $e) {
+            echo "Error while retweeting  $tweetId\n";
+            
+        }
+
+        return $response;
+    }
+
+    public function user(string $screenName) : ?Response
+    {
+        $route = $this->uris['userUri'];
+        $response = null;
+
+        try {
+            $response = $this->client->get($route, [
+                'query' => [
+                    'screen_name' => $screenName
+                ]
+            ]); 
+        } catch(ClientException $e) {
+            echo "Error while get user's information\n";
+            
+        }  
+
+        return $response;
     }
 
     // private function decode(string $result, bool $asArray = true) : array

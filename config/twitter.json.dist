@@ -11,7 +11,7 @@
         "tweetUri" : "statuses/show.json",
         "searchUri" : "search/tweets.json",
         "followUri" : "friendships/create.json",
-        "retweetUri" : "statuses/retweet/:id.json"
+        "retweetUri" : "statuses/retweet/"
     },
     "search" : {
         "term" : ["witcher 3"],
