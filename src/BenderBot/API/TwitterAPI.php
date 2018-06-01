@@ -35,14 +35,18 @@ class TwitterAPI implements APIInterface
     {
         $route = $this->uris['searchUri'];
         $response = null;
+        $randTerm = array_rand($this->search['term']);
+
+        echo "Terme recherché : " . $this->search['term'][$randTerm] ."\n";
 
         try {
             $response =  $this->client->get($route, [
                 'query' => [
-                    'q' => implode('%20', $this->search['term']),
+                    'q' => str_replace(' ', '%20', $this->search['term'][$randTerm]),
                     'result_type' => 'mixed',
                     'tweet_mode' => 'extended',
-                    'count' => 100
+                    'count' => 100,
+                    'lang' => 'fr'
                 ]
             ]);
         } catch (ClientException $e) {

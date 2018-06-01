@@ -20,8 +20,14 @@ class Bender extends AbstractBender
         $tweets        = $retour['statuses'];
 
         foreach($tweets as $tweet) {
+          
 
            echo $tweet['id'] . ' : ' .$tweet['user']['name'] . "\n";
+
+           if(isset($tweet['retweeted_status'])){
+              echo "Tweet RT dans la recherche\n";
+              continue;
+           }
 
         // if not rt already:
            if(!$tweetModel->isTweetAlreadyRT($tweet['id_str']) && !$tweet['retweeted']){
@@ -106,12 +112,12 @@ class Bender extends AbstractBender
            // chill for like 10 - 30 sec & repeat
           $time = rand (10 , 20);
 
-          echo "attente de $time secondes \n";
+          echo "attente de $time secondes entre deux tweets\n";
           sleep($time);
-
         }
 
-        $reload = rand(3600, 7200);
+        $reload = rand(600, 900);
+        echo "attente de ". $reload/60 ." minutes entre deux recherches\n";
         sleep($reload);
         $this->run();
 

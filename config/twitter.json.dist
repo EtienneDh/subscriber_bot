@@ -14,7 +14,7 @@
         "retweetUri" : "statuses/retweet/"
     },
     "search" : {
-        "term" : ["witcher 3"],
+        "term" : ["jeu concours", "#concours", "concours", "lot gagner", "rt + follow"],
         "options" : ""
     }
 }
