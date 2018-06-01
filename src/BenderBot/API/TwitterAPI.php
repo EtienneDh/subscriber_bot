@@ -34,15 +34,22 @@ class TwitterAPI implements APIInterface
     public function search() : Response
     {
         $route = $this->uris['searchUri'];
+        $response = null;
 
-        return $this->client->get($route, [
-            'query' => [
-                'q' => implode('%20', $this->search['term']),
-                'result_type' => 'mixed',
-                'tweet_mode' => 'extended',
-                'count' => 100
-            ]
-        ]);
+        try {
+            $response =  $this->client->get($route, [
+                'query' => [
+                    'q' => implode('%20', $this->search['term']),
+                    'result_type' => 'mixed',
+                    'tweet_mode' => 'extended',
+                    'count' => 100
+                ]
+            ]);
+        } catch (ClientException $e) {
+            echo "Error while search tweet\n";
+        }
+
+        return $response;
     }
 
     public function subscribe(string $idTwitter, array $options = []) : ?Response
@@ -58,7 +65,7 @@ class TwitterAPI implements APIInterface
                 ]
             ]);
         } catch (ClientException $e) {
-            echo "Error while subscribing to $idTwitter\n, Account might be followed already \n";
+            echo "Error while subscribing to $idTwitter\n";
         }
 
         return $response;
@@ -76,7 +83,7 @@ class TwitterAPI implements APIInterface
         try {
             $response = $this->client->post($route, []);
         } catch(ClientException $e) {
-            echo "Error while retweeting  $tweetId,\n Tweet might be RT already \n";
+            echo "Error while retweeting  $tweetId\n";
             
         }
 
@@ -86,12 +93,20 @@ class TwitterAPI implements APIInterface
     public function user(string $screenName) : ?Response
     {
         $route = $this->uris['userUri'];
+        $response = null;
 
-        return $this->client->get($route, [
-            'query' => [
-                'screen_name' => $screenName
-            ]
-        ]);   
+        try {
+            $response = $this->client->get($route, [
+                'query' => [
+                    'screen_name' => $screenName
+                ]
+            ]); 
+        } catch(ClientException $e) {
+            echo "Error while get user's information\n";
+            
+        }  
+
+        return $response;
     }
 
     // private function decode(string $result, bool $asArray = true) : array
