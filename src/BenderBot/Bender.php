@@ -172,8 +172,9 @@ class Bender extends AbstractBender
     private function getAccountsToFollow(OODBBean $tweetBean, array $parsedTweet) : array
     {
         $accountsToFollow = [];
-        if($parsedTweet['@'] > 1) {
+        if($parsedTweet['@'] >= 1) {
             // replace '@' in text body with 'at.' (can't find a way to match @ with following regex -.-)
+            $tweetBean->text = "Follow @Moi & @Toi + @Test";
             $text = str_replace("@", "at.", $tweetBean->text);
             // Set the regex.
             $regex = '/(?<=\bat.)(?:[\w-]+)/is';
