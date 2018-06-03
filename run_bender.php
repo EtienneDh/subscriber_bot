@@ -26,5 +26,7 @@ $password = $params['database']['password'];
 
 R::setup( "mysql:host=localhost;dbname=benderbot_rb", $user, $password);
 
+ini_set('max_execution_time', 0);
+
 $benderBot = Factory::getBender($appName);
 $benderBot->run();

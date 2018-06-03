@@ -20,19 +20,53 @@ class Bender extends AbstractBender
         $tweets        = $retour['statuses'];
 
         foreach($tweets as $k => $tweet) {
+
+          echo '|'. $k . '|' . date("Y-m-d H:i:s") . '|' .$tweet['user']['name'] . "\n";
+
           
-
-           echo '-'. $k . ' | ' .$tweet['id'] . ' : ' .$tweet['user']['name'] . "\n";
-
-           if(isset($tweet['retweeted_status'])){
-              echo "Tweet RT dans la recherche\n";
-              continue;
-           }
 
         // if not rt already:
            if(!$tweetModel->isTweetAlreadyRT($tweet['id_str']) && !$tweet['retweeted']){
-               $bean      = $tweetModel->getBeanForInsert();
-               $tweetBean = $this->hydrateTweetBean($bean, $tweet);
+              $bean      = $tweetModel->getBeanForInsert();
+              $tweetBean = $this->hydrateTweetBean($bean, $tweet);
+
+              if(isset($tweet['retweeted_status'])){
+                echo "Tweet RT dans la recherche : récupération des comptes du RT\n";
+                  // Run the regex with preg_match_all.
+                preg_match_all('/@\w+/is', $tweetBean->text, $matches);
+
+                if(is_array($matches)){
+                    
+                  foreach ($matches as $match) {
+                    
+                    foreach ($match as $name) {
+                      /* Test si le nom de compte est présent en bdd */
+                                           
+                        $objAccount = json_decode($this->api->user($name)->getBody(), true);
+
+                        if(!$accountModel->isAlreadyFollowed($objAccount['id_str'])) {
+                          echo "creating new account \n";
+                          $bean        = $accountModel->getBeanForInsert();
+                          $accountBean = $this->hydrateAccountBean($bean, $objAccount);
+
+                          /* Subscribe account */
+                          $subsribeSuccess = $this->api->subscribe($accountBean->idTwitter);
+                          if(null !== $subsribeSuccess) {
+                            echo "account followed \n";
+                            $accountBean->following = 1;
+                          }
+
+                        $accountModel->save($accountBean);
+
+                        $time = rand(3,5);
+                        echo "Pause de $time secondes entre deux follows \n";
+                        sleep($time);
+                      }
+                    }
+                  }
+                }
+                continue;
+              }
 
                // get array with occurence for 'RT', 'follow' & '@'
                $parsedTweet = $this->parseTweet($tweetBean);
@@ -40,7 +74,7 @@ class Bender extends AbstractBender
 
                // if tweet mentions 'RT' and 'follow'
                if($parsedTweet['rt'] >= 1 && $parsedTweet['follow'] >= 1) {
-                   echo "give away ! \n";
+                   echo "Jeu trouvé\n";
                    // and does not ask to follow more than 1 account
                    if($parsedTweet['@'] <= 1 ) { // false positive possible
                        // find or create account
@@ -78,7 +112,7 @@ class Bender extends AbstractBender
                       echo "Tweet & account saved \n";
                    } else {
                        
-                       echo "Multiple follow \n";
+                        echo "Multiple follow \n";
                         // Run the regex with preg_match_all.
                         preg_match_all('/@\w+/is', $tweetBean->text, $matches);
 
@@ -88,30 +122,33 @@ class Bender extends AbstractBender
                           
                             foreach ($match as $name) {
                             /* Test si le nom de compte est présent en bdd */
-                            $accountName = substr($name, 1);
-                             
-                            if(!$accountModel->isAlreadySave($accountName)){ 
-                                                            
-                              $objAccount = json_decode($this->api->user($accountName)->getBody(), true);
+                                                 
+                              $objAccount = json_decode($this->api->user($name)->getBody(), true);
 
-                              $bean        = $accountModel->getBeanForInsert();
-                              $accountBean = $this->hydrateAccountBean($bean, $objAccount);
+                              if(!$accountModel->isAlreadyFollowed($objAccount['id_str'])) {
+                                echo "creating new account \n";
+                                $bean        = $accountModel->getBeanForInsert();
+                                $accountBean = $this->hydrateAccountBean($bean, $objAccount);
 
-                              /* Subscribe account */
-                              $subsribeSuccess = $this->api->subscribe($objAccount->idTwitter);
-                              if(null !== $subsribeSuccess) {
+                                /* Subscribe account */
+                                $subsribeSuccess = $this->api->subscribe($accountBean->idTwitter);
+                                if(null !== $subsribeSuccess) {
                                   echo "account followed \n";
                                   $accountBean->following = 1;
-                              }
+                                }
 
                               $accountModel->save($accountBean);
+
+                              $time = rand(3,5);
+                              echo "Pause de $time secondes entre deux follows \n";
+                              sleep($time);
                             }
                           }
                         }
                       }
                     }
                } else {
-                   echo "tweet is not a give away \n";
+                   echo "Pas de jeu trouvé\n";
                }
            } else {
                echo "tweet already in data base \n";
@@ -120,17 +157,17 @@ class Bender extends AbstractBender
           echo 'Tweet : ' . $tweetModel->count() . "\n";
           echo 'Account : ' . $accountModel->count() . "\n" ;
            // chill for like 10 - 30 sec & repeat
-          $time = rand (20 , 40);
+          $time = rand (5 , 10);
 
           echo "attente de $time secondes entre deux tweets\n";
           sleep($time);
         }
-
-        $reload = rand(300, 600);
+/*
+        $reload = rand(60, 90);
         echo "attente de ". intval($reload/60) ." minutes entre deux recherches\n";
         sleep($reload);
         $this->run();
-
+*/
       }
 
     /**
@@ -165,7 +202,7 @@ class Bender extends AbstractBender
      */
     private function parseTweet(OODBBean $tweetBean)
     {
-        $needles = ['rt + follow' , 'RT + Follow' , 'Follow + RT' , 'follow + rt', 'follow+rt', 'rt+follow' , 'rt ' , ' rt' , '#rt' , 'follow' , 'Follow ','@' ] ;
+        $needles = ['rt ', 'follow', '@'] ;
         $tweetText = strtolower($tweetBean->text);
 
         $results = [
@@ -175,34 +212,21 @@ class Bender extends AbstractBender
         ];
 
         foreach($needles as $needle) {
-            if(substr_count($tweetText , $needle) != 0) {
+            $match = substr_count(strtolower($tweetText) , $needle);
+            if($match != 0) {
                 switch ($needle) {
-                    case 'rt + follow':
-                    case 'RT + Follow':
-                    case 'Follow + RT':
-                    case 'follow + rt':
-                    case 'follow+rt':
-                    case 'rt+follow' :
-                        $results['rt']     = $results['rt'] + 1 ;
-                        $results['follow'] = $results['follow'] + 1;
-                    break;
                     case 'rt ':
-                    case ' rt ':
-                    case '#rt':
-                        $results['rt'] = $results['rt'] + 1;
+                        $results['rt'] = $results['rt'] + $match;
                         break;
-                    case ' follow ':
-                    case ' Follow ':
-                        $results['follow'] = $results['follow'] + 1;
+                    case 'follow':
+                        $results['follow'] = $results['follow'] + $match;
                         break;
                     case '@':
-                        $results['@'] = $results['@'] + 1;
+                        $results['@'] = $results['@'] + $match;
                         break;
-                    default:
-                    break;
                 }
             }
         }
-        return $results;
+      return $results;
     }
 }
