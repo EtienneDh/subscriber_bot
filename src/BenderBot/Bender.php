@@ -41,26 +41,33 @@ class Bender extends AbstractBender
                     
                     foreach ($match as $name) {
                       /* Test si le nom de compte est présent en bdd */
-                                           
-                        $objAccount = json_decode($this->api->user($name)->getBody(), true);
+                        
+                        $response = $this->api->user($name);
 
-                        if(!$accountModel->isAlreadyFollowed($objAccount['id_str'])) {
-                          echo "creating new account \n";
-                          $bean        = $accountModel->getBeanForInsert();
-                          $accountBean = $this->hydrateAccountBean($bean, $objAccount);
+                        if($response !== null)
+                        {
+                          $objAccount = json_decode($response->getBody(), true);
 
-                          /* Subscribe account */
-                          $subsribeSuccess = $this->api->subscribe($accountBean->idTwitter);
-                          if(null !== $subsribeSuccess) {
-                            echo "account followed \n";
-                            $accountBean->following = 1;
-                          }
+                          if(!$accountModel->isAlreadyFollowed($objAccount['id_str'])) {
+                            echo "creating new account \n";
+                            $bean        = $accountModel->getBeanForInsert();
+                            $accountBean = $this->hydrateAccountBean($bean, $objAccount);
 
-                        $accountModel->save($accountBean);
+                            /* Subscribe account */
+                            $subsribeSuccess = $this->api->subscribe($accountBean->idTwitter);
+                            if(null !== $subsribeSuccess) {
+                              echo "account followed \n";
+                              $accountBean->following = 1;
+                            }
 
-                        $time = rand(3,5);
-                        echo "Pause de $time secondes entre deux follows \n";
-                        sleep($time);
+                          $accountModel->save($accountBean);
+
+                          $time = rand(3,5);
+                          echo "Pause de $time secondes entre deux follows \n";
+                          sleep($time);
+                        }else{
+                          echo "Compte déjà suivi\n";
+                        }
                       }
                     }
                   }
@@ -122,26 +129,32 @@ class Bender extends AbstractBender
                           
                             foreach ($match as $name) {
                             /* Test si le nom de compte est présent en bdd */
-                                                 
-                              $objAccount = json_decode($this->api->user($name)->getBody(), true);
+                              $response = $this->api->user($name);
 
-                              if(!$accountModel->isAlreadyFollowed($objAccount['id_str'])) {
-                                echo "creating new account \n";
-                                $bean        = $accountModel->getBeanForInsert();
-                                $accountBean = $this->hydrateAccountBean($bean, $objAccount);
+                              if($response !== null)
+                              {
+                                $objAccount = json_decode(->getBody(), true);
 
-                                /* Subscribe account */
-                                $subsribeSuccess = $this->api->subscribe($accountBean->idTwitter);
-                                if(null !== $subsribeSuccess) {
-                                  echo "account followed \n";
-                                  $accountBean->following = 1;
-                                }
+                                if(!$accountModel->isAlreadyFollowed($objAccount['id_str'])) {
+                                  echo "creating new account \n";
+                                  $bean        = $accountModel->getBeanForInsert();
+                                  $accountBean = $this->hydrateAccountBean($bean, $objAccount);
 
-                              $accountModel->save($accountBean);
+                                  /* Subscribe account */
+                                  $subsribeSuccess = $this->api->subscribe($accountBean->idTwitter);
+                                  if(null !== $subsribeSuccess) {
+                                    echo "account followed \n";
+                                    $accountBean->following = 1;
+                                  }
 
-                              $time = rand(3,5);
-                              echo "Pause de $time secondes entre deux follows \n";
-                              sleep($time);
+                                $accountModel->save($accountBean);
+
+                                $time = rand(3,5);
+                                echo "Pause de $time secondes entre deux follows \n";
+                                sleep($time);
+                              }else{
+                                echo "Compte déjà suivi\n";
+                              }
                             }
                           }
                         }
