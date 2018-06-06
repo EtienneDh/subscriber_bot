@@ -9,179 +9,220 @@ class Bender extends AbstractBender
 {
     private $results;
 
-    public function run()
+    private function getData() : array
     {
-        $tweetModel   = $this->mp->getModel('tweet');
-        $accountModel = $this->mp->getModel('account');        
-
-        // Look for tweet
+       // Look for tweet
         $this->results = $this->api->search();
         $retour        = json_decode($this->results->getBody(), true);
-        $tweets        = $retour['statuses'];
+        return $retour['statuses'];
+    }
 
-        foreach($tweets as $k => $tweet) {
+    public function run()
+    {
+      $tweetModel   = $this->mp->getModel('tweet');
+      $accountModel = $this->mp->getModel('account');        
 
-          echo '|'. $k . '|' . date("Y-m-d H:i:s") . '|' .$tweet['user']['name'] . "\n";
+      $tweets = $this->getData();
 
-          
+      foreach($tweets as $k => $tweet) {
 
-        // if not rt already:
-           if(!$tweetModel->isTweetAlreadyRT($tweet['id_str']) && !$tweet['retweeted']){
-              $bean      = $tweetModel->getBeanForInsert();
-              $tweetBean = $this->hydrateTweetBean($bean, $tweet);
+        echo '|'. $k . '|' . date("Y-m-d H:i:s") . '|' .$tweet['user']['name'] . "\n";
 
-              if(isset($tweet['retweeted_status'])){
-                echo "Tweet RT dans la recherche : récupération des comptes du RT\n";
-                  // Run the regex with preg_match_all.
-                preg_match_all('/@\w+/is', $tweetBean->text, $matches);
+        /* Tweet déjà connu */
+        if($tweetModel->isTweetAlreadyRT($tweet['id_str'])){
+          echo "tweet already in data base \n";
+          continue;
+        }
 
-                if(is_array($matches)){
-                    
-                  foreach ($matches as $match) {
-                    
-                    foreach ($match as $name) {
-                      /* Test si le nom de compte est présent en bdd */
-                        
-                        $response = $this->api->user($name);
+        /* Chargement du tweet dans la bean */
+        $bean      = $tweetModel->getBeanForInsert();
+        $tweetBean = $this->hydrateTweetBean($bean, $tweet);
 
-                        if($response !== null)
-                        {
-                          $objAccount = json_decode($response->getBody(), true);
+        /* Si le tweet est un RT => récupération du concours RT */
+        if(isset($tweet['retweeted_status']))
+        {
+          echo "Tweet RT : \n";
 
-                          if(!$accountModel->isAlreadyFollowed($objAccount['id_str'])) {
-                            echo "creating new account \n";
-                            $bean        = $accountModel->getBeanForInsert();
-                            $accountBean = $this->hydrateAccountBean($bean, $objAccount);
+          // Run the regex with preg_match_all.
+          preg_match_all('/@\w+/is', $tweet['retweeted_status']['full_text'], $matches);
 
-                            /* Subscribe account */
-                            $subsribeSuccess = $this->api->subscribe($accountBean->idTwitter);
-                            if(null !== $subsribeSuccess) {
-                              echo "account followed \n";
-                              $accountBean->following = 1;
-                            }
+          if(!is_array($matches))
+          {
+            echo " - Aucun compte trouvé \n";
+            continue;
+          }
 
-                          $accountModel->save($accountBean);
+          foreach ($matches as $match) {
+            
+            foreach ($match as $name) {
+              
+              /* Test si le nom de compte est présent en bdd */  
+              $response = $this->api->user($name);
 
-                          $time = rand(3,5);
-                          echo "Pause de $time secondes entre deux follows \n";
-                          sleep($time);
-                        }else{
-                          echo "Compte déjà suivi\n";
-                        }
-                      }
-                    }
-                  }
-                }
+              if($response === null)
+              {
+                echo " - Problème de requete de compte \n";
+                continue;
+              }
+      
+              $objAccount = json_decode($response->getBody(), true);
+
+              if($accountModel->isAlreadyFollowed($objAccount['id_str']))
+              {
+                echo " - Compte déjà en bdd\n";
                 continue;
               }
 
-               // get array with occurence for 'RT', 'follow' & '@'
-               $parsedTweet = $this->parseTweet($tweetBean);
+              echo " - Création compte \n";
+              $bean        = $accountModel->getBeanForInsert();
+              $accountBean = $this->hydrateAccountBean($bean, $objAccount);
 
+              /* Subscribe account */
+              $subsribeSuccess = $this->api->subscribe($accountBean->idTwitter);
+              if(null !== $subsribeSuccess) {
+                echo " - Compte suivi \n";
+                $accountBean->following = 1;
+              }
 
-               // if tweet mentions 'RT' and 'follow'
-               if($parsedTweet['rt'] >= 1 && $parsedTweet['follow'] >= 1) {
-                   echo "Jeu trouvé\n";
-                   // and does not ask to follow more than 1 account
-                   if($parsedTweet['@'] <= 1 ) { // false positive possible
-                       // find or create account
-                       if($accountModel->isAlreadyFollowed($tweet['user']['id_str'])) {
-                           echo "account existing \n";
-                           $accountBean = $accountModel->getAccountWithIdTwitter($tweet['user']['id_str']);
-                       } else {
-                           echo "creating new account \n";
-                           $bean        = $accountModel->getBeanForInsert();
-                           $accountBean = $this->hydrateAccountBean($bean, $tweet['user']);
+              $accountModel->save($accountBean);
 
-                            /* Subscribe account */
-                            $subsribeSuccess = $this->api->subscribe($accountBean->idTwitter);
-                            if(null !== $subsribeSuccess) {
-                                echo "account followed \n";
-                                $accountBean->following = 1;
-                            }
-                      }
+              $time = rand(3,5);
+              echo " - Attente de $time secondes \n";
+              echo " ----------------------------\n";
+              sleep($time);
+                
+            }
 
-                      // rt
-                      $rtSuccess = $this->api->retweet($tweetBean->idTweet);
-                      if(null !== $rtSuccess) {
-                          echo "tweet RT \n";
+          }
 
-                          // save
-                          $tweetBean->rt = 1;
-                      }
-
-                      
-                      $accountBean->ownTweetList[] = $tweetBean;
-                      $accountBean->nbOfTweetRT++;
-
-                      $tweetModel->save($tweetBean);
-                      $accountModel->save($accountBean);
-                      echo "Tweet & account saved \n";
-                   } else {
-                       
-                        echo "Multiple follow \n";
-                        // Run the regex with preg_match_all.
-                        preg_match_all('/@\w+/is', $tweetBean->text, $matches);
-
-                        if(is_array($matches)){
-                          
-                          foreach ($matches as $match) {
-                          
-                            foreach ($match as $name) {
-                            /* Test si le nom de compte est présent en bdd */
-                              $response = $this->api->user($name);
-
-                              if($response !== null)
-                              {
-                                $objAccount = json_decode(->getBody(), true);
-
-                                if(!$accountModel->isAlreadyFollowed($objAccount['id_str'])) {
-                                  echo "creating new account \n";
-                                  $bean        = $accountModel->getBeanForInsert();
-                                  $accountBean = $this->hydrateAccountBean($bean, $objAccount);
-
-                                  /* Subscribe account */
-                                  $subsribeSuccess = $this->api->subscribe($accountBean->idTwitter);
-                                  if(null !== $subsribeSuccess) {
-                                    echo "account followed \n";
-                                    $accountBean->following = 1;
-                                  }
-
-                                $accountModel->save($accountBean);
-
-                                $time = rand(3,5);
-                                echo "Pause de $time secondes entre deux follows \n";
-                                sleep($time);
-                              }else{
-                                echo "Compte déjà suivi\n";
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-               } else {
-                   echo "Pas de jeu trouvé\n";
-               }
-           } else {
-               echo "tweet already in data base \n";
-           }
-
-          echo 'Tweet : ' . $tweetModel->count() . "\n";
-          echo 'Account : ' . $accountModel->count() . "\n" ;
-           // chill for like 10 - 30 sec & repeat
-          $time = rand (5 , 10);
-
-          echo "attente de $time secondes entre deux tweets\n";
-          sleep($time);
+          echo " - Fin de scan RT \n";
+          /* Passage au tweet suivant */
+          continue;
         }
-/*
-        $reload = rand(60, 90);
-        echo "attente de ". intval($reload/60) ." minutes entre deux recherches\n";
-        sleep($reload);
-        $this->run();
-*/
+
+        // get array with occurence for 'RT', 'follow' & '@'
+        $parsedTweet = $this->parseTweet($tweetBean);
+
+        // if tweet mentions 'RT' and 'follow'
+        if($parsedTweet['rt'] >= 1 && $parsedTweet['follow'] >= 1) 
+        {
+          echo "Concours trouvé \n";
+             // and does not ask to follow more than 1 account
+          if($parsedTweet['@'] <= 1 ) 
+          { // false positive possible
+            // find or create account
+            if($accountModel->isAlreadyFollowed($tweet['user']['id_str'])) {
+               echo "account existing \n";
+               $accountBean = $accountModel->getAccountWithIdTwitter($tweet['user']['id_str']);
+            } else {
+               echo "creating new account \n";
+               $bean        = $accountModel->getBeanForInsert();
+               $accountBean = $this->hydrateAccountBean($bean, $tweet['user']);
+
+                /* Subscribe account */
+                $subsribeSuccess = $this->api->subscribe($accountBean->idTwitter);
+                if(null !== $subsribeSuccess) {
+                    echo "account followed \n";
+                    $accountBean->following = 1;
+                }
+            }
+
+            // rt
+            $rtSuccess = $this->api->retweet($tweetBean->idTweet);
+            if(null !== $rtSuccess) 
+            {
+                echo "tweet RT \n";
+                // save
+                $tweetBean->rt = 1;
+            }
+
+                
+            $accountBean->ownTweetList[] = $tweetBean;
+            $accountBean->nbOfTweetRT++;
+
+            $tweetModel->save($tweetBean);
+            $accountModel->save($accountBean);
+            echo "Tweet & account saved \n";
+          } 
+          else 
+          {
+            echo "Multiple follow \n";
+            // Run the regex with preg_match_all.
+            preg_match_all('/@\w+/is', $tweetBean->text, $matches);
+
+            if(is_array($matches)){
+                
+              foreach ($matches as $match) {
+                  
+                foreach ($match as $name) {
+                  /* Test si le nom de compte est présent en bdd */
+                  $response = $this->api->user($name);
+
+                  if($response === null)
+                  {
+                        echo " - Problème de requete de compte \n";
+                        continue;
+                  }
+
+                  $objAccount = json_decode($response->getBody(), true);
+
+                  if($accountModel->isAlreadyFollowed($objAccount['id_str']))
+                  {
+                        echo " - Compte déjà en bdd\n";
+                        $accountBean = $accountModel->getAccountWithIdTwitter($objAccount['id_str']);
+                  }
+                  else
+                  {
+                        echo " - Création compte \n";
+                        $bean        = $accountModel->getBeanForInsert();
+                        $accountBean = $this->hydrateAccountBean($bean, $objAccount);
+                  }
+
+                  /* Subscribe account */
+                  $subsribeSuccess = $this->api->subscribe($accountBean->idTwitter);
+                  if(null !== $subsribeSuccess) 
+                  {
+                        echo " - Compte suivi \n";
+                        $accountBean->following = 1;
+                  }
+
+                  // rt
+                  $rtSuccess = $this->api->retweet($tweetBean->idTweet);
+                  if(null !== $rtSuccess) 
+                  {
+                        echo " - Tweet RT \n";
+                        // save
+                        $tweetBean->rt = 1;
+                  }
+                      
+                  $accountBean->ownTweetList[] = $tweetBean;
+                  $accountBean->nbOfTweetRT++;
+
+                  $tweetModel->save($tweetBean);
+                  $accountModel->save($accountBean);
+
+                  $time = rand(3,5);
+                  echo " - Attente de $time secondes \n";
+                  sleep($time);
+                }
+              }
+            }
+          }
+        }
+        else
+        {
+          echo "Pas de concours trouvé \n";
+        }
+        
+        // chill for like 10 - 30 sec & repeat
+        $time = rand (5 , 10);
+
+        echo "attente de $time secondes entre deux tweets\n";
+        sleep($time);
       }
+      echo 'Nombre de tweet : ' . $tweetModel->count() . "\n";
+      echo 'Nombre de compte : ' . $accountModel->count() . "\n" ;
+    }
 
     /**
      * TODO Refactor hydrate methods and move
