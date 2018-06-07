@@ -87,7 +87,7 @@ class TwitterAPI implements APIInterface
         try {
             $response = $this->client->post($route, []);
         } catch(ClientException $e) {
-            echo "Error while retweeting  $tweetId\n";
+            echo "Error while retweeting  $tweetId\n ". $e->getMessage() . "\n";
             
         }
 
