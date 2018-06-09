@@ -19,6 +19,19 @@ class Bender extends AbstractBender
 
     public function run()
     {
+
+      $options = $this->api->getOptions();
+
+      if(isset($options['hourBegin']) && isset($options['hourEnd']))
+      {
+        $hour = date("H");
+
+        if($hour < $options['hourBegin'] || $hour > $options['hourEnd']){
+          echo "ZzzzzZzzzzZzzzz";
+        }
+
+      }
+
       $tweetModel   = $this->mp->getModel('tweet');
       $accountModel = $this->mp->getModel('account');        
 
@@ -79,7 +92,6 @@ class Bender extends AbstractBender
                 // save
                 $tweetBean->rt = 1;
             }
-
                 
             $accountBean->ownTweetList[] = $tweetBean;
             $accountBean->nbOfTweetRT++;
@@ -112,16 +124,13 @@ class Bender extends AbstractBender
 
                   if($accountModel->isAlreadyFollowed($objAccount['id_str']))
                   {
-                        $accountBean = $accountModel->getAccountWithIdTwitter($objAccount['id_str']);
                         echo " - Compte déjà en bdd : $accountBean->name \n";
+                        continue;
                   }
-                  else
-                  {
                         
-                        $bean        = $accountModel->getBeanForInsert();
-                        $accountBean = $this->hydrateAccountBean($bean, $objAccount);
-                        echo " - Création compte : $accountBean->name \n";
-                  }
+                  $bean        = $accountModel->getBeanForInsert();
+                  $accountBean = $this->hydrateAccountBean($bean, $objAccount);
+                  echo " - Création compte : $accountBean->name \n";
 
                   /* Subscribe account */
                   $subsribeSuccess = $this->api->subscribe($accountBean->idTwitter);
@@ -130,27 +139,24 @@ class Bender extends AbstractBender
                         echo " - Compte suivi \n";
                         $accountBean->following = 1;
                   }
-
-                  // rt
-                  $rtSuccess = $this->api->retweet($tweetBean->idTweet);
-                  if(null !== $rtSuccess) 
-                  {
-                        echo " - Tweet RT \n";
-                        // save
-                        $tweetBean->rt = 1;
-                  }
-                      
-                  $accountBean->ownTweetList[] = $tweetBean;
-                  $accountBean->nbOfTweetRT++;
-
-                  $tweetModel->save($tweetBean);
+                  
                   $accountModel->save($accountBean);
-
+                  
                   $time = rand(3,5);
                   echo " - Attente de $time secondes \n";
                   sleep($time);
                 }
               }
+
+              // rt
+              $rtSuccess = $this->api->retweet($tweetBean->idTweet);
+              if(null !== $rtSuccess) 
+              {
+                    echo " - Tweet RT \n";
+                    // save
+                    $tweetBean->rt = 1;
+              }
+              $tweetModel->save($tweetBean);
             }
           }
         }

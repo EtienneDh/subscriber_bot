@@ -12,6 +12,8 @@ class TwitterAPI implements APIInterface
 {
     private $client;
     private $uris = array();
+    private $search = array();
+    private $options = array();
 
     public function setClient(Client $client) : APIInterface
     {
@@ -29,6 +31,17 @@ class TwitterAPI implements APIInterface
     {
         $this->search = $search;
         return $this;
+    }
+
+    public function setOptions(array $options) : APIInterface
+    {
+        $this->options = $options;
+        return $this;
+    }
+
+    public function getOptions() : array
+    {
+        return $this->options;
     }
 
     public function search() : Response
@@ -87,8 +100,7 @@ class TwitterAPI implements APIInterface
         try {
             $response = $this->client->post($route, []);
         } catch(ClientException $e) {
-            echo "Error while retweeting  $tweetId\n ". $e->getMessage() . "\n";
-            
+                echo "Error while retweeting  $tweetId\n ". $e->getMessage() . "\n";    
         }
 
         return $response;
@@ -112,9 +124,4 @@ class TwitterAPI implements APIInterface
 
         return $response;
     }
-
-    // private function decode(string $result, bool $asArray = true) : array
-    // {
-    //     return json_decode($results, $asArray);
-    // }
 }

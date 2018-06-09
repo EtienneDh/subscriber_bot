@@ -20,6 +20,8 @@ abstract class BenderConfigurator
 
     public static $search;
 
+    public static $options;
+
     /**
      * Fetch parameters from config files, create Client
      */
@@ -50,6 +52,14 @@ abstract class BenderConfigurator
         } else {
             exit("Missing parameters: Search term \n");
         }
+
+
+        // Set Term of Search
+        if(isset($params['options'])) {
+            self::$options = $params['options'];
+        } else {
+            exit("Missing parameters: Options term \n");
+        }
     }
 
     /**
@@ -69,6 +79,7 @@ abstract class BenderConfigurator
         $api->setClient(self::$client)
             ->setUris(self::$uris)
             ->setSearch(self::$search)
+            ->setOptions(self::$options)
         ;
 
         return $api;
