@@ -16,5 +16,6 @@
     "search" : {
         "term" : ["jeu concours", "#concours", "concours", "lot gagner", "rt + follow"],
         "options" : ""
-    }
+    },
+    "comments" : []
 }

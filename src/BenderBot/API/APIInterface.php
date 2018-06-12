@@ -12,6 +12,8 @@ interface APIInterface
 
     public function setSearch(array $search) : APIInterface;
 
+    public function setComments(array $comments) : APIInterface;
+
     public function setOptions(array $options) : APIInterface;
 
     public function getOptions() : array;

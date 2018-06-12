@@ -27,7 +27,8 @@ class Bender extends AbstractBender
         $hour = date("H");
 
         if($hour < $options['hourBegin'] || $hour > $options['hourEnd']){
-          echo "ZzzzzZzzzzZzzzz";
+          echo "ZzzzzZzzzzZzzzz \n";
+          die();
         }
 
       }
@@ -84,15 +85,22 @@ class Bender extends AbstractBender
                 }
             }
 
-            // rt
-            $rtSuccess = $this->api->retweet($tweetBean->idTweet);
-            if(null !== $rtSuccess) 
+
+            $commentSuccess = $this->api->comment($tweetBean->idTweet, $tweet['user']['screen_name']);
+
+            if(null !== $commentSuccess)
             {
-                echo " - tweet RT \n";
-                // save
-                $tweetBean->rt = 1;
-            }
-                
+              echo " - tweet Comment \n";
+              // rt
+              $rtSuccess = $this->api->retweet($tweetBean->idTweet);
+              if(null !== $rtSuccess) 
+              {
+                  echo " - tweet RT \n";
+                  // save
+                  $tweetBean->rt = 1;
+              }
+            }  
+
             $accountBean->ownTweetList[] = $tweetBean;
             $accountBean->nbOfTweetRT++;
 
@@ -148,13 +156,19 @@ class Bender extends AbstractBender
                 }
               }
 
-              // rt
-              $rtSuccess = $this->api->retweet($tweetBean->idTweet);
-              if(null !== $rtSuccess) 
+              $commentSuccess = $this->api->comment($tweetBean->idTweet, $tweet['user']['screen_name']);
+
+              if(null !== $commentSuccess)
               {
-                    echo " - Tweet RT \n";
-                    // save
-                    $tweetBean->rt = 1;
+                echo " - tweet Comment \n";
+                // rt
+                $rtSuccess = $this->api->retweet($tweetBean->idTweet);
+                if(null !== $rtSuccess) 
+                {
+                      echo " - Tweet RT \n";
+                      // save
+                      $tweetBean->rt = 1;
+                }
               }
               $tweetModel->save($tweetBean);
             }

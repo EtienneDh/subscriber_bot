@@ -14,6 +14,7 @@ class TwitterAPI implements APIInterface
     private $uris = array();
     private $search = array();
     private $options = array();
+    private $comments = array();
 
     public function setClient(Client $client) : APIInterface
     {
@@ -36,6 +37,12 @@ class TwitterAPI implements APIInterface
     public function setOptions(array $options) : APIInterface
     {
         $this->options = $options;
+        return $this;
+    }
+
+    public function setComments(array $comments) : APIInterface
+    {
+        $this->comments = $comments;
         return $this;
     }
 
@@ -101,6 +108,30 @@ class TwitterAPI implements APIInterface
             $response = $this->client->post($route, []);
         } catch(ClientException $e) {
                 echo "Error while retweeting  $tweetId\n ". $e->getMessage() . "\n";    
+        }
+
+        return $response;
+    }
+
+    public function comment(string $tweetId, string $username) : ?Response
+    {
+        $route = $this->uris['commentUri'];
+            
+        $status = $this->comments;
+
+        $txt = "@".$username . " " . $status[array_rand($status)];
+
+        $response = null;
+
+        try {
+            $response = $this->client->post($route, [
+                'query' => [
+                    "in_reply_to_status_id" => $tweetId, 
+                    "status" => $txt
+                ]
+            ]);
+        } catch(ClientException $e) {
+                echo "Error while comment  $tweetId\n ". $e->getMessage() . "\n";    
         }
 
         return $response;
